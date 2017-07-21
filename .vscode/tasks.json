@@ -1,0 +1,66 @@
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+
+// NOTE: This Test task runner requires an updated version of Pester (>=3.4.0)
+// in order for the problemMatcher to find failed test information (message, line, file).
+// If you don't have that version, you can update Pester from the PowerShell Gallery
+// with this command:
+//
+// PS C:\> Update-Module Pester
+//
+// If that gives an error like:
+// "Module 'Pester' was not installed by using Install-Module, so it cannot be updated."
+// then execute:
+//
+// PS C:\> Install-Module Pester -Scope CurrentUser -Force
+//
+
+// NOTE: The Clean, Build and Publish tasks require PSake. PSake can be installed
+// from the PowerShell Gallery with this command:
+//
+// PS C:\> Install-Module PSake -Scope CurrentUser -Force
+//
+
+// Available variables which can be used inside of strings.
+// ${workspaceRoot}: the root folder of the team
+// ${file}: the current opened file
+// ${fileBasename}: the current opened file's basename
+// ${fileDirname}: the current opened file's dirname
+// ${fileExtname}: the current opened file's extension
+// ${cwd}: the current working directory of the spawned process
+{
+    "version": "2.0.0",
+
+    // Start PowerShell
+    "windows": {
+        "command": "${env:windir}\\sysnative\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass"]
+    },
+    "linux": {
+        "command": "/usr/bin/powershell",
+        "args": ["-NoProfile"]
+    },
+    "osx": {
+        "command": "/usr/local/bin/powershell",
+        "args": ["-NoProfile"]
+    },
+
+    // Associate with test task runner
+    "tasks": [{
+        "taskName": "Test",
+        "suppressTaskName": true,
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "args": [
+            "Write-Host 'Invoking Pester...'; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true};",
+            "Invoke-Command { Write-Host 'Completed Test task in task runner.' }"
+        ],
+        "presentation": {
+            "reveal": "always",
+            "panel": "dedicated"
+        },
+        "problemMatcher": "$pester"
+    }]
+}
