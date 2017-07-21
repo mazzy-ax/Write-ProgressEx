@@ -15,7 +15,7 @@ The cmdlet:
 
 NOTE: the cmdlet is not safe with multi-thread.
 
-![screenshot: Write-ProgressEx](.\media\sample.pipe.png)
+![screenshot: Write-ProgressEx](./media/sample.pipe.png)
 
 Sample:
 ```powershell
