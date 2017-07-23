@@ -47,34 +47,20 @@
 
     // Associate with test task runner
     "tasks": [{
-            "taskName": "Test",
-            "suppressTaskName": true,
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "args": [
-                "Write-Host 'Invoking Pester...'; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true};",
-                "Invoke-Command { Write-Host 'Completed Test task in task runner.' }"
-            ],
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated"
-            },
-            "problemMatcher": "$pester"
+        "taskName": "Test",
+        "suppressTaskName": true,
+        "group": {
+            "kind": "build",
+            "isDefault": true
         },
-        {
-            "taskName": "Publish to psgallery",
-            "suppressTaskName": true,
-            "group": "build",
-            "args": [
-                "Write-Host 'Publish to powershellgallery.comm...'; publish-module -path ${workspaceRoot}",
-                "Invoke-Command { Write-Host 'Done.' }"
-            ],
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated"
-            }
-        }
-    ]
+        "args": [
+            "Write-Host 'Invoking Pester...'; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true};",
+            "Invoke-Command { Write-Host 'Completed Test task in task runner.' }"
+        ],
+        "presentation": {
+            "reveal": "always",
+            "panel": "dedicated"
+        },
+        "problemMatcher": "$pester"
+    }]
 }
