@@ -71,21 +71,21 @@ function Write-ProgressEx {
             $Completed = $true
         }
 
-        if ( -not $Global:ProgressExInfo ) {
+        if ( -not $Global:ProgressExInfo -or $Global:ProgressExInfo -isnot [array] ) {
             $Global:ProgressExInfo = @()
         }
 
         $id = [Math]::Min( [Math]::Max(0, $id), $Global:ProgressExInfo.Count)
 
+        # Complete all inner progress bars
         while ($id -lt $Global:ProgressExInfo.Count - 1 ) {
             Write-ProgressEx -Complete -id ($Global:ProgressExInfo.Count - 1)
         }
 
-        if ( $id -eq $Global:ProgressExInfo.Count ) {
-            $Global:ProgressExInfo += @{std = @{Id = $id}}
-        }
-
         $pInfo = $Global:ProgressExInfo[$id]
+        if ( $pInfo -isnot [hashtable] -or $pInfo.Std -isnot [hashtable] ) {
+            $pInfo = @{std = @{Id = $id}}
+        }
 
         if ( $Activity ) {
             $pInfo.std.Activity = $Activity
@@ -156,7 +156,10 @@ function Write-ProgressEx {
         # Housecleaning
         if ( $pInfo.std.Completed ) {
             $pInfo.stopwatch = $null
-            $Global:ProgressExInfo = @() + ($Global:ProgressExInfo | Select-Object -First ($Global:ProgressExInfo.Count - 1)) # not safe with multithreading
+            $Global:ProgressExInfo = @() + ($Global:ProgressExInfo | Select-Object -First ([Math]::Max(0, $Global:ProgressExInfo.Count - 1))) # not safe with multithreading
+        }
+        elseif ( $id -eq $Global:ProgressExInfo.Count ) {
+            $Global:ProgressExInfo += $pInfo # not safe with multithreading
         }
         else {
             $Global:ProgressExInfo[$id] = $pInfo
