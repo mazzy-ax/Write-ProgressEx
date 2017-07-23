@@ -9,7 +9,7 @@
 
     CompanyName = 'mazzy'
 
-    ModuleVersion = '0.1'
+    ModuleVersion = '0.2'
 
     # Use the New-Guid command to generate a GUID, and copy/paste into the next line
     GUID = '<05f1a40e-b5cc-4495-b73e-46e812e1b754>'

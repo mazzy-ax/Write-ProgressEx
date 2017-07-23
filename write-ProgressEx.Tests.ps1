@@ -62,7 +62,7 @@ Describe "poshProgress" {
         It "write-ProgressEx without parameters complete all progresses" {
             write-ProgressEx "outerLevel" -Total $outerLevel.Count
             write-ProgressEx "innerLevel" -Total $innerLevel.Count -id 1
-            
+
             $Global:ProgressExInfo.Count | Should be 2
             $Global:ProgressExInfo[0].Total | Should be $outerLevel.Count
             $Global:ProgressExInfo[1].Total | Should be $innerLevel.Count
@@ -72,7 +72,7 @@ Describe "poshProgress" {
         }
 
         It "After the total updated every write-ProgressEx increment counter" {
-            write-ProgressEx -Total $outerLevel.Count            
+            write-ProgressEx -Total $outerLevel.Count
             $Global:ProgressExInfo[0].current | Should be 0
 
             write-ProgressEx -increment
@@ -80,7 +80,7 @@ Describe "poshProgress" {
         }
 
         It "Every write-ProgressEx with 'previous' id complete inner progress" {
-            write-ProgressEx -Total $outerLevel.Count            
+            write-ProgressEx -Total $outerLevel.Count
             write-ProgressEx -Total $innerLevel.Count -id 1
             $Global:ProgressExInfo[0].current | Should be 0
             $Global:ProgressExInfo[1].current | Should be 0

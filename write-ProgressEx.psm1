@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 21.07.2017
+# mazzy@mazzy.ru, 23.07.2017
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 <#
@@ -45,7 +45,7 @@ function Write-ProgressEx {
         # Extended parameters
         [Parameter(ValueFromPipeline = $true)]
         [object]$inputObject,
-      
+
         [ValidateRange(-1, [int]::MaxValue)]
         [int]$total,
         [ValidateRange(0, [int]::MaxValue)]
@@ -72,86 +72,97 @@ function Write-ProgressEx {
         }
 
         if ( -not $Global:ProgressExInfo ) {
-            #FIXME check array of hashtable
             $Global:ProgressExInfo = @()
         }
 
         $id = [Math]::Min( [Math]::Max(0, $id), $Global:ProgressExInfo.Count)
 
         while ($id -lt $Global:ProgressExInfo.Count - 1 ) {
-            Write-ProgressEx -Complete -id ($Global:ProgressExInfo.Count - 1)                       
+            Write-ProgressEx -Complete -id ($Global:ProgressExInfo.Count - 1)
         }
 
         if ( $id -eq $Global:ProgressExInfo.Count ) {
             $Global:ProgressExInfo += @{std = @{Id = $id}}
         }
 
+        $pInfo = $Global:ProgressExInfo[$id]
+
         if ( $Activity ) {
-            $Global:ProgressExInfo[$id].std.Activity = $Activity
+            $pInfo.std.Activity = $Activity
         }
 
         if ( $Status ) {
-            $Global:ProgressExInfo[$id].std.Status = $Status
+            $pInfo.std.Status = $Status
         }
 
         if ( $CurrentOperation ) {
-            $Global:ProgressExInfo[$id].std.CurrentOperation = $CurrentOperation
+            $pInfo.std.CurrentOperation = $CurrentOperation
         }
 
         if ( $ParentId ) {
-            $Global:ProgressExInfo[$id].std.ParentId = $ParentId
+            $pInfo.std.ParentId = $ParentId
         }
 
         if ( $SourceId ) {
-            $Global:ProgressExInfo[$id].std.SourceId = $SourceId
+            $pInfo.std.SourceId = $SourceId
         }
 
         if ( $total ) {
-            $Global:ProgressExInfo[$id].Current = 0
-            $Global:ProgressExInfo[$id].std.PercentComplete = 0
-            $Global:ProgressExInfo[$id].Total = $total
-            if ( -not $Completed -and ($Global:ProgressExInfo[$id].Total -gt 0) ) {
-                $Global:ProgressExInfo[$id].std.Activity = ($Global:ProgressExInfo[$id].std.Activity, $Global:ProgressExInfo[$id].Total -join ': ')
-                $Global:ProgressExInfo[$id].stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-                $Global:ProgressExInfo[$id].std.SecondsRemaining = 0
+            $pInfo.Current = 0
+            $pInfo.std.PercentComplete = 0
+            $pInfo.Total = $total
+            if ( -not $Completed -and ($pInfo.Total -gt 0) ) {
+                $pInfo.std.Activity = ($pInfo.std.Activity, $pInfo.Total -join ': ')
+                $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+                $pInfo.std.SecondsRemaining = 0
             }
         }
+
         if ( $current ) {
-            $Global:ProgressExInfo[$id].Current = [Math]::Min($current, $Global:ProgressExInfo[$id].Total)
-        }       
+            $pInfo.Current = [Math]::Min($current, $pInfo.Total)
+        }
+
         if ( $increment -and -not $Completed `
-                -and ($Global:ProgressExInfo[$id].Total -gt 0) `
-                -and ($Global:ProgressExInfo[$id].Current -ne -1) ) {
-            $Global:ProgressExInfo[$id].Current = [Math]::Min($Global:ProgressExInfo[$id].Current + 1, $Global:ProgressExInfo[$id].Total)
-            $Global:ProgressExInfo[$id].std.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($Global:ProgressExInfo[$id].Current / $Global:ProgressExInfo[$id].Total * 100)), 100)
-            if ( $Global:ProgressExInfo[$id].stopwatch ) {
-                [System.Diagnostics.Stopwatch]$stopwatch = $Global:ProgressExInfo[$id].stopwatch
-                $Global:ProgressExInfo[$id].std.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($Global:ProgressExInfo[$id].Total - $Global:ProgressExInfo[$id].Current) / $Global:ProgressExInfo[$id].Current)
+                -and ($pInfo.Total -gt 0) `
+                -and ($pInfo.Current -ne -1) ) {
+            $pInfo.Current = [Math]::Min($pInfo.Current + 1, $pInfo.Total)
+            $pInfo.std.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
+            if ( $pInfo.stopwatch ) {
+                [System.Diagnostics.Stopwatch]$stopwatch = $pInfo.stopwatch
+                $pInfo.std.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
             }
         }
 
         if ( $PercentComplete ) {
-            $Global:ProgressExInfo[$id].std.PercentComplete = $PercentComplete
-        }
-        if ( $SecondsRemaining -or $Completed ) {
-            $Global:ProgressExInfo[$id].std.SecondsRemaining = $SecondsRemaining
-            $Global:ProgressExInfo[$id].stopwatch = $null
+            $pInfo.std.PercentComplete = $PercentComplete
         }
 
-        if (-not $Global:ProgressExInfo[$id].std.Activity) {
-            $Global:ProgressExInfo[$id].std.Activity = '.'
+        if ( $SecondsRemaining ) {
+            $pInfo.std.SecondsRemaining = $SecondsRemaining
         }
 
-        $pInfo = $Global:ProgressExInfo[$id].std
         if ( $Completed ) {
-            Write-Progress @pInfo -Completed
-            $Global:ProgressExInfo[$id].stopwatch = $null
-            $Global:ProgressExInfo = @() + ($Global:ProgressExInfo | Select-Object -First ($Global:ProgressExInfo.Count - 1))
+            $pInfo.std.Completed = $Completed
+        }
+
+        # Activity is mandatory parameter for Write-Progress
+        if (-not $pInfo.std.Activity) {
+            $pInfo.std.Activity = '.'
+        }
+
+        $Args = $pInfo.std
+        Write-Progress @Args
+
+        # Housecleaning
+        if ( $pInfo.std.Completed ) {
+            $pInfo.stopwatch = $null
+            $Global:ProgressExInfo = @() + ($Global:ProgressExInfo | Select-Object -First ($Global:ProgressExInfo.Count - 1)) # not safe with multithreading
         }
         else {
-            Write-Progress @pInfo
+            $Global:ProgressExInfo[$id] = $pInfo
         }
 
+        # PassThru
         if ( $inputObject ) {
             $inputObject
         }

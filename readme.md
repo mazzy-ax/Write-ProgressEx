@@ -1,5 +1,5 @@
 # Write-ProgressEx: extended write-progress cmdlet
-mazzy@mazzy.ru, 21.07.2017, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 23.07.2017, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 
 
