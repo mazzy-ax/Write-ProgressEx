@@ -58,6 +58,7 @@ function Write-ProgressEx {
         [Parameter(Position = 1)]
         [string]$Status,
         [Parameter(Position = 2)]
+        [ValidateRange(0, [int]::MaxValue)]
         [int]$Id = 0,
         [int]$PercentComplete,
         [int]$SecondsRemaining,
@@ -67,102 +68,126 @@ function Write-ProgressEx {
         [switch]$Completed
     )
     process {
-        if ( -not $PSBoundParameters.Count ) {
-            $Completed = $true
-        }
-
-        if ( -not $Global:ProgressExInfo -or $Global:ProgressExInfo -isnot [array] ) {
+        if ( $Global:ProgressExInfo -isnot [array] ) {
             $Global:ProgressExInfo = @()
         }
 
-        $id = [Math]::Min( [Math]::Max(0, $id), $Global:ProgressExInfo.Count)
+        $pInfo = $Global:ProgressExInfo | Where-Object { $_.Std.Id -eq $id } | Select-Object -First 1
 
-        # Complete all inner progress bars
-        while ($id -lt $Global:ProgressExInfo.Count - 1 ) {
-            Write-ProgressEx -Complete -id ($Global:ProgressExInfo.Count - 1)
+        if ( $pInfo -isnot [hashtable] -or $pInfo.Std -isnot [hashtable] ) {
+            $pInfo = @{Std = @{Id = $id}}
         }
 
-        $pInfo = $Global:ProgressExInfo[$id]
-        if ( $pInfo -isnot [hashtable] -or $pInfo.Std -isnot [hashtable] ) {
-            $pInfo = @{std = @{Id = $id}}
+        if ( $Completed ) {
+            $pInfo.Std.Completed = $Completed
         }
 
         if ( $Activity ) {
-            $pInfo.std.Activity = $Activity
-        }
-
-        if ( $Status ) {
-            $pInfo.std.Status = $Status
-        }
-
-        if ( $CurrentOperation ) {
-            $pInfo.std.CurrentOperation = $CurrentOperation
-        }
-
-        if ( $ParentId ) {
-            $pInfo.std.ParentId = $ParentId
-        }
-
-        if ( $SourceId ) {
-            $pInfo.std.SourceId = $SourceId
+            $pInfo.Std.Activity = $Activity
         }
 
         if ( $total ) {
+            $pInfo.Std.PercentComplete = 0
             $pInfo.Current = 0
-            $pInfo.std.PercentComplete = 0
             $pInfo.Total = $total
-            if ( -not $Completed -and ($pInfo.Total -gt 0) ) {
-                $pInfo.std.Activity = ($pInfo.std.Activity, $pInfo.Total -join ': ')
+            if ( -not $pInfo.Std.Completed -and ($pInfo.Total -gt 0) ) {
+                $pInfo.Std.Activity = ($pInfo.Std.Activity, $pInfo.Total -join ': ')
+                $pInfo.Std.SecondsRemaining = 0
                 $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-                $pInfo.std.SecondsRemaining = 0
+
+                if ( (-not $ParentId) -and (-not $pInfo.Std.ParentId) ) {
+                    $ParentInfo = ($Global:ProgressExInfo | Where-Object { $_.Std.Id -lt $id } | Measure-Object -Maximum).Maximum
+                    if ( $ParentInfo ) {
+                        $pInfo.Std.ParentId = $ParentInfo.Std.Id
+                    }
+                }
             }
         }
 
-        if ( $current ) {
-            $pInfo.Current = [Math]::Min($current, $pInfo.Total)
+        if ( $Current ) {
+            $pInfo.Current = [Math]::Max(-1, [Math]::Min($Current, $pInfo.Total))
+            $pInfo.stopwatch = $null
         }
 
-        if ( $increment -and -not $Completed `
+        if ( $Increment -and -not $pInfo.Std.Completed `
                 -and ($pInfo.Total -gt 0) `
                 -and ($pInfo.Current -ne -1) ) {
+            # next
             $pInfo.Current = [Math]::Min($pInfo.Current + 1, $pInfo.Total)
-            $pInfo.std.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
-            if ( $pInfo.stopwatch ) {
+
+            # calc
+            if ( -not $PercentComplete ) {
+                $pInfo.Std.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
+            }
+            if ( -not $SecondsRemaining -and $pInfo.stopwatch ) {
                 [System.Diagnostics.Stopwatch]$stopwatch = $pInfo.stopwatch
-                $pInfo.std.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
+                $pInfo.Std.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
             }
         }
 
         if ( $PercentComplete ) {
-            $pInfo.std.PercentComplete = $PercentComplete
+            $pInfo.Std.PercentComplete = $PercentComplete
         }
 
         if ( $SecondsRemaining ) {
-            $pInfo.std.SecondsRemaining = $SecondsRemaining
+            $pInfo.Std.SecondsRemaining = $SecondsRemaining
         }
 
-        if ( $Completed ) {
-            $pInfo.std.Completed = $Completed
+        if ( $ParentId ) {
+            $pInfo.Std.ParentId = $ParentId
+        }
+
+        if ( $SourceId ) {
+            $pInfo.Std.SourceId = $SourceId
+        }
+
+        if ( $Status ) {
+            $pInfo.Std.Status = $Status
+        }
+
+        if ( $CurrentOperation ) {
+            $pInfo.Std.CurrentOperation = $CurrentOperation
         }
 
         # Activity is mandatory parameter for Write-Progress
-        if (-not $pInfo.std.Activity) {
-            $pInfo.std.Activity = '.'
+        if ( -not $pInfo.Std.Activity ) {
+            $pInfo.Std.Activity = '.'
         }
 
-        $Args = $pInfo.std
-        Write-Progress @Args
+        $pArgs = $pInfo.Std
+        Write-Progress @pArgs
 
-        # Housecleaning
-        if ( $pInfo.std.Completed ) {
-            $pInfo.stopwatch = $null
-            $Global:ProgressExInfo = @() + ($Global:ProgressExInfo | Select-Object -First ([Math]::Max(0, $Global:ProgressExInfo.Count - 1))) # not safe with multithreading
-        }
-        elseif ( $id -eq $Global:ProgressExInfo.Count ) {
-            $Global:ProgressExInfo += $pInfo # not safe with multithreading
+        # Store to global
+        $Global:ProgressExInfo = (, $pInfo) + ($Global:ProgressExInfo | Where-Object { $_.Std.Id -ne $pInfo.Std.Id })
+
+        # Remove Completed
+        if ( -not $PSBoundParameters.Count ) {
+            # Complete all progresses
+            $ToComplete = @() + ($Global:ProgressExInfo | ForEach-Object { $_.Std.Id })
         }
         else {
-            $Global:ProgressExInfo[$id] = $pInfo
+            # Complete all children progresses
+            $ToComplete = @() + ($Global:ProgressExInfo | Where-Object { $_.Std.Completed } | ForEach-Object { $_.Std.Id })
+            $Generation = @($pInfo.Std.id)
+            do {
+                $Generation = @() + ($Global:ProgressExInfo `
+                    | Where-Object { ($_.Std.ParentId -ne $null) -and ($_.Std.ParentId -in $Generation) -and ($_.Std.id -notin $ToComplete) } `
+                    | ForEach-Object { $_.Std.Id })
+                $ToComplete += $Generation
+            } while ($Generation)
+        }
+
+        if ( $ToComplete.Count ) {
+            $Global:ProgressExInfo = @() + ($Global:ProgressExInfo | ForEach-Object {
+                    if ( $_.Std.Id -notin $ToComplete ) {
+                        $_
+                    }
+                    else {
+                        $_.stopwatch = $null
+                        $_.Std.Completed = $true
+                        Write-Progress -Complete -id $_.Std.id -Activity $_.Std.Activity
+                    }
+                })
         }
 
         # PassThru

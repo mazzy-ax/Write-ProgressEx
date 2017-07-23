@@ -15,9 +15,31 @@ The cmdlet:
 
 NOTE: the cmdlet is not safe with multi-thread.
 
+Sample:
+
+```powershell
+$range1 = 1..20
+write-ProgressEx "loop 1" -Total $range1.Count
+$range1 | write-ProgressEx -Status "$_" -increment | ForEach-Object {
+        # ....
+    }
+}
+
+$range2 = 1..15
+write-ProgressEx "loop 2" -Total $range2.Count
+$range2 | ForEach-Object {
+        # ....
+        write-ProgressEx -Status "$_" -increment
+    }
+}
+
+write-ProgressEx #close all progress bars
+```
+
+Sample with nested loops:
+
 ![screenshot: Write-ProgressEx](./media/sample.pipe.png)
 
-Sample:
 ```powershell
 $outer = 1..20
 $inner = 1..50
@@ -30,4 +52,4 @@ $outer | write-ProgressEx -Status "outer $_" -increment | ForEach-Object {
     }
 }
 write-ProgressEx #close all progress bars
-
+```
