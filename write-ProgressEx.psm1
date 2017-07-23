@@ -168,3 +168,5 @@ function Write-ProgressEx {
         }
     }
 }
+
+Export-ModuleMember -function Write-ProgressEx
