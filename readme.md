@@ -45,9 +45,9 @@ $outer = 1..20
 $inner = 1..50
 
 write-ProgressEx "pipe nodes" -Total $outer.Count
-$outer | write-ProgressEx -Status "outer $_" -increment | ForEach-Object {
+$outer | write-ProgressEx -Status "outer" -increment | ForEach-Object {
     write-ProgressEx "pipe names" -Total $inner.Count -id 1
-    $inner | write-ProgressEx -id 1 -increment -status "inner $_" | ForEach-Object {
+    $inner | write-ProgressEx -id 1 -increment -status "inner" | ForEach-Object {
         # ....
     }
 }
