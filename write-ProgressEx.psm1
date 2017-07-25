@@ -158,7 +158,7 @@ function Write-ProgressEx {
         Write-Progress @pArgs
 
         # Store to global
-        $Global:ProgressExInfo = (, $pInfo) + ($Global:ProgressExInfo | Where-Object { $_.Std.Id -ne $pInfo.Std.Id })
+        $Global:ProgressExInfo = @($pInfo) + ($Global:ProgressExInfo | Where-Object { $_.Std.Id -ne $pInfo.Std.Id })
 
         # Remove Completed
         if ( -not $PSBoundParameters.Count ) {
