@@ -113,7 +113,7 @@ function Write-ProgressEx {
                 -and ($pInfo.Total -gt 0) `
                 -and ($pInfo.Current -ne -1) ) {
             # next
-            $pInfo.Current = [Math]::Max(0, [Math]::Min($pInfo.Current + 1, $pInfo.Total))
+            $pInfo.Current = [Math]::Min([Math]::Max(0, $pInfo.Current + 1), $pInfo.Total)
 
             # calc
             if ( -not $PercentComplete ) {
