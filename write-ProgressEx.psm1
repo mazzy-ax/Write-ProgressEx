@@ -109,7 +109,7 @@ function Write-ProgressEx {
             $pInfo.stopwatch = $null
         }
 
-        if ( $Increment -and -not $pInfo.Std.Completed `
+        if ( -not $pInfo.Std.Completed -and ($Increment -or $inputObject) `
                 -and ($pInfo.Total -gt 0) `
                 -and ($pInfo.Current -ne -1) ) {
             # next

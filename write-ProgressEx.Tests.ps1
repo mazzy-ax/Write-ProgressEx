@@ -40,9 +40,9 @@ Describe "poshProgress" {
         It "pipes: outer and inner loops" {
             {
                 write-ProgressEx "nodes" -Total $nodes.Count
-                $outerLevel | write-ProgressEx -increment | ForEach-Object {
+                $outerLevel | write-ProgressEx | ForEach-Object {
                     write-ProgressEx "names" -Total $names.Count -id 1
-                    $innerLevel | write-ProgressEx -id 1 -increment | ForEach-Object {
+                    $innerLevel | write-ProgressEx -id 1 | ForEach-Object {
                         #start-sleep 1
                     }
                 }
