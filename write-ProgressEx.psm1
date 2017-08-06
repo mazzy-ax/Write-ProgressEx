@@ -1,5 +1,112 @@
-# mazzy@mazzy.ru, 23.07.2017
+# mazzy@mazzy.ru, 06.08.2017
 # https://github.com/mazzy-ax/Write-ProgressEx
+
+$StdParmNames = (Get-Command Write-Progress).Parameters.GetEnumerator() | Select-Object -ExpandProperty Key
+
+function Mount-ProgressExInfo {
+    [cmdletbinding()]
+    param(
+        [switch]$Force
+    )
+
+    begin {
+        if ( $Force -or $Global:ProgressExInfo -isnot [hashtable] ) {
+            $Global:ProgressExInfo = @{}
+        }
+    }
+}
+
+function Get-ProgressExInfo {
+    [cmdletbinding()]
+    param(
+        [Parameter(ValueFromPipeline = $true, Position = 0)]
+        [ValidateRange(0, [int]::MaxValue)]
+        [int]$Id = 0,
+
+        [switch]$ForceNew
+    )
+
+    begin {
+        Mount-ProgressExInfo
+    }
+
+    process {
+        $pInfo = $Global:ProgressExInfo[$Id]
+
+        if ( $pInfo -is [hashtable] ) {
+            return $pInfo
+        }
+
+        if ( $ForceNew ) {
+            return @{Id = $id}
+        }
+
+        $null
+    }
+}
+
+function Set-ProgressExInfo {
+    [cmdletbinding()]
+    param(
+        [Parameter(ValueFromPipeline = $true, Position = 0)]
+        [hashtable]$Info
+    )
+
+    begin {
+        Mount-ProgressExInfo
+    }
+
+    process {
+        function Write-ProgressStd($pInfo) {
+            # Invoke standard write-progress cmdlet
+            $pArgs = @{}
+            $pInfo.GetEnumerator() | Where-Object { $_.name -in $StdParmNames } | ForEach-Object { $pArgs.Add( $_.name, $_.value ) }
+
+            if ( $pInfo.Total ) {
+                $pArgs.Activity = ($pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': ')
+            }
+
+            # Activity is mandatory parameter for standard Write-Progress
+            if ( -not $pArgs.Activity ) {
+                $pArgs.Activity = '.'
+            }
+
+            Write-Progress @pArgs
+        }
+
+        function Complete-Progress($Id) {
+            $Global:ProgressExInfo[$Id].Completed = $true
+            $Global:ProgressExInfo[$Id].Stopwatch = $null
+            $Global:ProgressExInfo.Remove($Id)
+        }
+
+        function Complete-ChilrenProgress($Ids) {
+            while ($Ids -ne $null) {
+                $Ids = $Global:ProgressExInfo.GetEnumerator() `
+                    | Where-Object { $_.Value -and ($_.Value.ParentId -ne $null) -and ($_.Value.ParentId -in $Ids) } `
+                    | Select-Object -ExpandProperty Key
+
+                $Ids | ForEach-Object {
+                    Write-Progress -Completed -Activity '.' -id $_
+                    Complete-Progress($_)
+                }
+            }
+        }
+
+        if ( $Info.id -ne $null ) {
+            $Global:ProgressExInfo[$Info.Id] = $Info
+
+            Write-ProgressStd $Info
+
+            if ( $Info.Completed ) {
+                Complete-Progress($Info.Id)
+            }
+
+            # A set-action with a progress is a cause to complete all children
+            Complete-ChilrenProgress $Info.id
+        }
+    }
+}
 
 <#
 .SYNOPSIS
@@ -67,40 +174,37 @@ function Write-ProgressEx {
         [int]$SourceId,
         [switch]$Completed
     )
+
+    begin {
+        Mount-ProgressExInfo
+    }
+
     process {
-        if ( $Global:ProgressExInfo -isnot [array] ) {
-            $Global:ProgressExInfo = @()
+        $pInfo = Get-ProgressExInfo $id -ForceNew
+
+        if ( $ParentId ) {
+            $pInfo.ParentId = $ParentId
         }
 
-        $pInfo = $Global:ProgressExInfo | Where-Object { $_.Std.Id -eq $id } | Select-Object -First 1
-
-        if ( $pInfo -isnot [hashtable] -or $pInfo.Std -isnot [hashtable] ) {
-            $pInfo = @{Std = @{Id = $id}}
-        }
-
-        if ( $Completed ) {
-            $pInfo.Std.Completed = $Completed
-        }
-
-        if ( $Activity ) {
-            $pInfo.Std.Activity = $Activity
+        if ( $SourceId ) {
+            $pInfo.SourceId = $SourceId
         }
 
         if ( $total ) {
-            $pInfo.Std.PercentComplete = 0
+            $pInfo.PercentComplete = 0
             $pInfo.Current = 0
             $pInfo.Total = $total
-            if ( -not $pInfo.Std.Completed -and ($pInfo.Total -gt 0) ) {
-                $pInfo.Std.Activity = ($pInfo.Std.Activity, $pInfo.Total -join ': ')
-                $pInfo.Std.SecondsRemaining = 0
-                $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
-                if ( (-not $ParentId) -and (-not $pInfo.Std.ParentId) ) {
-                    $ParentInfo = ($Global:ProgressExInfo | Where-Object { $_.Std.Id -lt $id } | Measure-Object -Maximum).Maximum
-                    if ( $ParentInfo ) {
-                        $pInfo.Std.ParentId = $ParentInfo.Std.Id
-                    }
+            if ( -not $pInfo.ParentId ) {
+                $ParentInfo = ($Global:ProgressExInfo.GetEnumerator() | Where-Object { $_.Key -lt $id } | Select-Object -ExpandProperty Key | Measure-Object -Maximum).Maximum
+                if ( $ParentInfo -ne $null ) {
+                    $pInfo.ParentId = $ParentInfo
                 }
+            }
+
+            if ( $pInfo.Total -gt 0 ) {
+                $pInfo.SecondsRemaining = 0
+                $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
             }
         }
 
@@ -109,92 +213,60 @@ function Write-ProgressEx {
             $pInfo.stopwatch = $null
         }
 
-        if ( -not $pInfo.Std.Completed -and ($Increment -or $inputObject) `
-                -and ($pInfo.Total -gt 0) `
-                -and ($pInfo.Current -ne -1) ) {
+        if ( $Increment -or $inputObject ) {
             # next
             $pInfo.Current = [Math]::Min([Math]::Max(0, $pInfo.Current + 1), $pInfo.Total)
-
-            # calc
-            if ( -not $PercentComplete ) {
-                $pInfo.Std.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
-            }
-            if ( -not $SecondsRemaining -and $pInfo.stopwatch ) {
-                [System.Diagnostics.Stopwatch]$stopwatch = $pInfo.stopwatch
-                $pInfo.Std.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
-            }
         }
 
+        $isCalcPossible = ($pInfo.Total -gt 0) -and ($pInfo.Current -gt 0)
+
         if ( $PercentComplete ) {
-            $pInfo.Std.PercentComplete = $PercentComplete
+            $pInfo.PercentComplete = $PercentComplete
+        }
+        elseif ( $isCalcPossible ) {
+            $pInfo.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
         }
 
         if ( $SecondsRemaining ) {
-            $pInfo.Std.SecondsRemaining = $SecondsRemaining
+            $pInfo.SecondsRemaining = $SecondsRemaining
         }
-
-        if ( $ParentId ) {
-            $pInfo.Std.ParentId = $ParentId
-        }
-
-        if ( $SourceId ) {
-            $pInfo.Std.SourceId = $SourceId
+        elseif ( $pInfo.stopwatch -and $isCalcPossible ) {
+            $stopwatch = [System.Diagnostics.Stopwatch]$pInfo.stopwatch
+            $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
         }
 
         if ( $Status ) {
-            $pInfo.Std.Status = $Status
+            $pInfo.Status = $Status
         }
 
         if ( $CurrentOperation ) {
-            $pInfo.Std.CurrentOperation = $CurrentOperation
+            $pInfo.CurrentOperation = $CurrentOperation
         }
 
-        # Activity is mandatory parameter for Write-Progress
-        if ( -not $pInfo.Std.Activity ) {
-            $pInfo.Std.Activity = '.'
+        if ( $Activity ) {
+            $pInfo.Activity = $Activity
         }
 
-        $pArgs = $pInfo.Std
-        Write-Progress @pArgs
-
-        # Store to global
-        $Global:ProgressExInfo = @($pInfo) + ($Global:ProgressExInfo | Where-Object { $_.Std.Id -ne $pInfo.Std.Id })
-
-        # Remove Completed
-        if ( -not $PSBoundParameters.Count ) {
-            # Complete all progresses
-            $ToComplete = @() + ($Global:ProgressExInfo | ForEach-Object { $_.Std.Id })
-        }
-        else {
-            # Complete all children progresses
-            $ToComplete = @() + ($Global:ProgressExInfo | Where-Object { $_.Std.Completed } | ForEach-Object { $_.Std.Id })
-            $Generation = @($pInfo.Std.id)
-            do {
-                $Generation = @() + ($Global:ProgressExInfo `
-                    | Where-Object { ($_.Std.ParentId -ne $null) -and ($_.Std.ParentId -in $Generation) -and ($_.Std.id -notin $ToComplete) } `
-                    | ForEach-Object { $_.Std.Id })
-                $ToComplete += $Generation
-            } while ($Generation)
+        if ( -not $PSBoundParameters.Count -or $Completed ) {
+            $pInfo.Completed = $true
         }
 
-        if ( $ToComplete.Count ) {
-            $Global:ProgressExInfo = @() + ($Global:ProgressExInfo | ForEach-Object {
-                    if ( $_.Std.Id -notin $ToComplete ) {
-                        $_
-                    }
-                    else {
-                        $_.stopwatch = $null
-                        $_.Std.Completed = $true
-                        Write-Progress -Complete -id $_.Std.id -Activity $_.Std.Activity
-                    }
-                })
-        }
+        # Store to global and call standard Write-Progress to display progress
+        Set-ProgressExInfo $pInfo
 
         # PassThru
         if ( $inputObject ) {
             $inputObject
         }
     }
+
+    # end {
+    #     # Cleanup
+    #     $Global:ProgressExInfo.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object {
+    #         $Global:ProgressExInfo.Remove($_.Key)
+    #     }
+    # }
 }
 
-Export-ModuleMember -function Write-ProgressEx
+
+Export-ModuleMember -function Write-ProgressEx, Get-ProgressExInfo, Set-ProgressExInfo
