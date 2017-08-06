@@ -4,7 +4,7 @@ mazzy@mazzy.ru, 2017-08-06, [https://github.com/mazzy-ax/Write-ProgressEx](https
 
 All notable changes to this project will be documented in this file.
 
-## [v0.7.0] - 2017-08-06
+## [v0.7] - 2017-08-06
 
 ### Main target
 
@@ -34,3 +34,5 @@ All notable changes to this project will be documented in this file.
 ### Removed
 
 - $Global:ProgressExInfo
+
+[v0.7]: https://github.com/mazzy-ax/Write-ProgressEx/compare/...v0.7

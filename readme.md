@@ -1,6 +1,8 @@
 # Write-ProgressEx: extended write-progress cmdlet
 mazzy@mazzy.ru, 2017-08-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
+![version][version-badge] ![license][license-badge]
+
 **Write-ProgressEx** extend the functionality of the standard powershell cmdlet. It provide a simple way to use -PercentComplete and -SecondsRemaining switches.
 
 The cmdlet:
@@ -55,3 +57,7 @@ $outer | write-ProgressEx -Status "outer" -increment | ForEach-Object {
 }
 write-ProgressEx #close all progress bars
 ```
+
+
+[version-badge]: https://img.shields.io/badge/version-0.7-green.svg
+[license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
