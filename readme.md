@@ -1,5 +1,6 @@
-# Write-ProgressEx: extended write-progress cmdlet
 mazzy@mazzy.ru, 2017-08-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+
+# Write-ProgressEx: extended write-progress cmdlet
 
 ![version][version-badge] ![license][license-badge]
 
@@ -15,9 +16,9 @@ The cmdlet:
 * stores totals, current values and actual parameters into the module hashtable;
 * provide get/set cmdlets to access actual parameters
 
-NOTE: the cmdlet is not safe with multi-thread.
+Note: the cmdlet is not safe with multi-thread.
 
-Sample:
+## Samples
 
 ```powershell
 $range1 = 1..20
@@ -38,17 +39,17 @@ $range2 | ForEach-Object {
 write-ProgressEx #close all progress bars
 ```
 
-Sample with nested loops:
+Sample with pipe and nested loops:
 
 ```powershell
 $outer = 1..20
 $inner = 1..50
 
 write-ProgressEx "pipe nodes" -Total $outer.Count
-$outer | write-ProgressEx -Status "outer" -increment | ForEach-Object {
+$outer | write-ProgressEx -Status "outer" | ForEach-Object {
 
     write-ProgressEx "pipe names" -Total $inner.Count -id 1
-    $inner | write-ProgressEx -id 1 -increment -status "inner" | ForEach-Object {
+    $inner | write-ProgressEx -id 1 -status "inner" | ForEach-Object {
         # ....
     }
 
@@ -60,7 +61,10 @@ write-ProgressEx #close all progress bars
 
 More samples are in the folder [Samples].
 
+[CHANGELOG.md][Changelog]
+
 
 [version-badge]: https://img.shields.io/badge/version-0.7-green.svg
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [Samples]: ./samples/
+[Changelog]: ./CHANGELOG.md
