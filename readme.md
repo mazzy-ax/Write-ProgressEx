@@ -66,5 +66,5 @@ More samples are in the folder [Samples].
 
 [version-badge]: https://img.shields.io/badge/version-0.7-green.svg
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[Samples]: samples/
-[Changelog]: CHANGELOG.md
+[Samples]: /samples
+[Changelog]: /CHANGELOG.md
