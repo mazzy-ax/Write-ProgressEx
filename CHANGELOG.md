@@ -35,4 +35,4 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
-[v0.7]: https://github.com/mazzy-ax/Write-ProgressEx/compare/...v0.7
+[v0.7]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.6...v0.7
