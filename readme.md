@@ -40,8 +40,6 @@ write-ProgressEx #close all progress bars
 
 Sample with nested loops:
 
-![screenshot: Write-ProgressEx](./media/sample.pipe.png)
-
 ```powershell
 $outer = 1..20
 $inner = 1..50
@@ -58,6 +56,11 @@ $outer | write-ProgressEx -Status "outer" -increment | ForEach-Object {
 write-ProgressEx #close all progress bars
 ```
 
+![screenshot: Write-ProgressEx](./media/sample.pipe.png)
+
+More samples are in the folder [Samples].
+
 
 [version-badge]: https://img.shields.io/badge/version-0.7-green.svg
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[Samples]: ./samples/
