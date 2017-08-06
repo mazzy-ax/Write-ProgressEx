@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 06.08.2017
+# mazzy@mazzy.ru, 2017-08-06
 # https://github.com/mazzy-ax/write-progressEx
 
 Import-Module -Force ".\write-ProgressEx.psm1"

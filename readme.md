@@ -1,7 +1,5 @@
 # Write-ProgressEx: extended write-progress cmdlet
-mazzy@mazzy.ru, 23.07.2017, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
-
-
+mazzy@mazzy.ru, 2017-08-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 **Write-ProgressEx** extend the functionality of the standard powershell cmdlet. It provide a simple way to use -PercentComplete and -SecondsRemaining switches.
 
@@ -9,9 +7,11 @@ The cmdlet:
 * works with pipe;
 * works with empty activity string;
 * automatically displays totals;
-* completes all inner progresses if no parameters;
-* stores totals and a current values into the global array;
+* automatically calculate percents;
 * uses [system.diagnostic.stopwatch] to calculate remaning seconds;
+* completes all inner progresses if no parameters;
+* stores totals, current values and actual parameters into the module hashtable;
+* provide get/set cmdlets to access actual parameters
 
 NOTE: the cmdlet is not safe with multi-thread.
 
@@ -46,10 +46,12 @@ $inner = 1..50
 
 write-ProgressEx "pipe nodes" -Total $outer.Count
 $outer | write-ProgressEx -Status "outer" -increment | ForEach-Object {
+
     write-ProgressEx "pipe names" -Total $inner.Count -id 1
     $inner | write-ProgressEx -id 1 -increment -status "inner" | ForEach-Object {
         # ....
     }
+
 }
 write-ProgressEx #close all progress bars
 ```

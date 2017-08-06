@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 06.08.2017
+# mazzy@mazzy.ru, 2017-08-06
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 
@@ -238,9 +238,12 @@ function Write-ProgressEx {
         }
 
         if ( $total ) {
-            $pInfo.PercentComplete = 0
-            $pInfo.Current = 0
             $pInfo.Total = $total
+
+            if ( -not $Increment -and -not $inputObject ) {
+                $pInfo.PercentComplete = 0
+                $pInfo.Current = 0
+            }
 
             if ( -not $pInfo.ParentId ) {
                 $ParentInfo = ($ProgressEx.GetEnumerator() | Where-Object { $_.Key -lt $id } | Select-Object -ExpandProperty Key | Measure-Object -Maximum).Maximum
