@@ -1,43 +1,58 @@
 # mazzy@mazzy.ru, 06.08.2017
 # https://github.com/mazzy-ax/Write-ProgressEx
 
+
+$ProgressEx = @{}
 $StdParmNames = (Get-Command Write-Progress).Parameters.GetEnumerator() | Select-Object -ExpandProperty Key
 
-function Mount-ProgressExInfo {
-    [cmdletbinding()]
-    param(
-        [switch]$Force
-    )
+<#
+.SYNOPSIS
+    Get or Create hashtable for progress with Id.
 
-    begin {
-        if ( $Force -or $Global:ProgressExInfo -isnot [hashtable] ) {
-            $Global:ProgressExInfo = @{}
+.DESCRIPTION
+    This cmdlet returns an hashtable related the progress with an Id.
+    The hashtable contain activity string, current and total counters, remain seconds, PercentComplete and other progress parameters.
+
+    The cmdlet returns $null if an Id was not used yet.
+    It returns new hashtable if $force specified and an Id was not used.
+
+.NOTES
+    A developer can modify values and use the hashtable for splatting into Write-ProgressEx.
+
+.EXAMPLE
+    $range = 1..1000
+    write-ProgressEx 'wait, please' -Total $range.Count
+    $range | write-ProgressEx | ForEach-Object {
+        $pInfo = Get-ProgressEx
+
+        if ( $pInfo.SecondsRemaining -lt 5 ) {
+            $pInfo['Activity'] = 'just a few seconds'
+            Write-ProgressEx @pInfo  # <-------
         }
     }
-}
+    The splatting to Write-ProgressEx is a common pattern to use progress info:
+    It's recalculate parameters and refresh progress on the console.
 
-function Get-ProgressExInfo {
+#>
+function Get-ProgressEx {
     [cmdletbinding()]
+    [OutputType([hashtable])]
     param(
         [Parameter(ValueFromPipeline = $true, Position = 0)]
         [ValidateRange(0, [int]::MaxValue)]
         [int]$Id = 0,
 
-        [switch]$ForceNew
+        [switch]$Force
     )
 
-    begin {
-        Mount-ProgressExInfo
-    }
-
     process {
-        $pInfo = $Global:ProgressExInfo[$Id]
+        $pInfo = $ProgressEx[$Id]
 
         if ( $pInfo -is [hashtable] ) {
             return $pInfo
         }
 
-        if ( $ForceNew ) {
+        if ( $Force ) {
             return @{Id = $id}
         }
 
@@ -45,16 +60,38 @@ function Get-ProgressExInfo {
     }
 }
 
-function Set-ProgressExInfo {
+<#
+.SYNOPSIS
+    Set parameters for the progress with Id and dispaly this values to the console.
+
+.DESCRIPTION
+    The cmdlet:
+    * save parameters
+    * display this parameters to console
+    * complete progress if Completed parameter is $true
+    * complete all children progresses always.
+
+.EXAMPLE
+    $range = 1..1000
+    write-ProgressEx 'wait, please' -Total $range.Count
+    $range | write-ProgressEx | ForEach-Object {
+        $pInfo = Get-ProgressEx
+        if ( $pInfo.PercentComplete -gt 50 ) {
+            $pInfo['Status'] = 'hard work in progress'
+            Set-ProgressEx $pInfo  # <-------
+        }
+    }
+    Set-ProgressEx is a rare pattern to use progress info.
+    It's no recalulate. It refresh progress on the console only.
+    Write-ProgressEx recommended.
+
+#>
+function Set-ProgressEx {
     [cmdletbinding()]
     param(
         [Parameter(ValueFromPipeline = $true, Position = 0)]
         [hashtable]$Info
     )
-
-    begin {
-        Mount-ProgressExInfo
-    }
 
     process {
         function Write-ProgressStd($pInfo) {
@@ -75,14 +112,16 @@ function Set-ProgressExInfo {
         }
 
         function Complete-Progress($Id) {
-            $Global:ProgressExInfo[$Id].Completed = $true
-            $Global:ProgressExInfo[$Id].Stopwatch = $null
-            $Global:ProgressExInfo.Remove($Id)
+            if ( $ProgressEx.ContainsKey($Id) ) {
+                $ProgressEx[$Id].Completed = $true
+                $ProgressEx[$Id].Stopwatch = $null
+                $ProgressEx.Remove($Id)
+            }
         }
 
         function Complete-ChilrenProgress($Ids) {
             while ($Ids -ne $null) {
-                $Ids = $Global:ProgressExInfo.GetEnumerator() `
+                $Ids = $ProgressEx.GetEnumerator() `
                     | Where-Object { $_.Value -and ($_.Value.ParentId -ne $null) -and ($_.Value.ParentId -in $Ids) } `
                     | Select-Object -ExpandProperty Key
 
@@ -93,8 +132,8 @@ function Set-ProgressExInfo {
             }
         }
 
-        if ( $Info.id -ne $null ) {
-            $Global:ProgressExInfo[$Info.Id] = $Info
+        if ( $Info.id -ge 0 ) {
+            $ProgressEx[$Info.Id] = $Info
 
             Write-ProgressStd $Info
 
@@ -123,6 +162,7 @@ function Set-ProgressExInfo {
         Write-ProgressEx -increment
     }
     write-posProgress -complete
+
 .EXAMPLE
     Write-ProgressEx -Total $nodes.Count
     $nodes | Where-Object ...... | Write-ProgressEx | ForEach-Object {
@@ -132,6 +172,7 @@ function Set-ProgressExInfo {
         }
     }
     Write-ProgressEx -complete
+
 .EXAMPLE
     Ideal: is it possible?
 
@@ -141,8 +182,13 @@ function Set-ProgressExInfo {
         }
     }
     write-posProgress -complete
+
 .NOTE
     Commands 'Write-ProgressEx.ps1' and 'Write-ProgressEx -Complete' are equivalents.
+    The cmdlet complete all children progresses.
+.NOTE
+    A developer can use a parameter splatting.
+    See Get-ProgressEx example.
 .NOTE
     Cmdlet is not safe with multi-thread.
 #>
@@ -158,6 +204,7 @@ function Write-ProgressEx {
         [ValidateRange(0, [int]::MaxValue)]
         [int]$current,
         [switch]$increment,
+        [System.Diagnostics.Stopwatch]$stopwatch,
 
         # Standard parameters for standard Powershell write-progress
         [Parameter(Position = 0)]
@@ -175,12 +222,8 @@ function Write-ProgressEx {
         [switch]$Completed
     )
 
-    begin {
-        Mount-ProgressExInfo
-    }
-
     process {
-        $pInfo = Get-ProgressExInfo $id -ForceNew
+        $pInfo = Get-ProgressEx $id -Force
 
         if ( $ParentId ) {
             $pInfo.ParentId = $ParentId
@@ -190,19 +233,23 @@ function Write-ProgressEx {
             $pInfo.SourceId = $SourceId
         }
 
+        if ( $stopwatch ) {
+            $pInfo.stopwatch = $stopwatch
+        }
+
         if ( $total ) {
             $pInfo.PercentComplete = 0
             $pInfo.Current = 0
             $pInfo.Total = $total
 
             if ( -not $pInfo.ParentId ) {
-                $ParentInfo = ($Global:ProgressExInfo.GetEnumerator() | Where-Object { $_.Key -lt $id } | Select-Object -ExpandProperty Key | Measure-Object -Maximum).Maximum
+                $ParentInfo = ($ProgressEx.GetEnumerator() | Where-Object { $_.Key -lt $id } | Select-Object -ExpandProperty Key | Measure-Object -Maximum).Maximum
                 if ( $ParentInfo -ne $null ) {
                     $pInfo.ParentId = $ParentInfo
                 }
             }
 
-            if ( $pInfo.Total -gt 0 ) {
+            if ( -not $pInfo.stopwatch -and ($pInfo.Total -gt 0) ) {
                 $pInfo.SecondsRemaining = 0
                 $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
             }
@@ -230,7 +277,7 @@ function Write-ProgressEx {
         if ( $SecondsRemaining ) {
             $pInfo.SecondsRemaining = $SecondsRemaining
         }
-        elseif ( $pInfo.stopwatch -and $isCalcPossible ) {
+        elseif ( $isCalcPossible -and $pInfo.stopwatch  ) {
             $stopwatch = [System.Diagnostics.Stopwatch]$pInfo.stopwatch
             $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
         }
@@ -247,26 +294,18 @@ function Write-ProgressEx {
             $pInfo.Activity = $Activity
         }
 
-        if ( -not $PSBoundParameters.Count -or $Completed ) {
+        if ( $Completed -or -not $PSBoundParameters.Count  ) {
             $pInfo.Completed = $true
         }
 
         # Store to global and call standard Write-Progress to display progress
-        Set-ProgressExInfo $pInfo
+        Set-ProgressEx $pInfo
 
         # PassThru
         if ( $inputObject ) {
             $inputObject
         }
     }
-
-    # end {
-    #     # Cleanup
-    #     $Global:ProgressExInfo.GetEnumerator() | Where-Object { -not $_.Value } | ForEach-Object {
-    #         $Global:ProgressExInfo.Remove($_.Key)
-    #     }
-    # }
 }
 
-
-Export-ModuleMember -function Write-ProgressEx, Get-ProgressExInfo, Set-ProgressExInfo
+Export-ModuleMember -function Write-ProgressEx, Get-ProgressEx, Set-ProgressEx
