@@ -113,6 +113,7 @@ function Set-ProgressEx {
 
         function Complete-Progress($Id) {
             if ( $ProgressEx.ContainsKey($Id) ) {
+                Write-Progress -Completed -Activity '.' -id $_
                 $ProgressEx[$Id].Completed = $true
                 $ProgressEx[$Id].Stopwatch = $null
                 $ProgressEx.Remove($Id)
@@ -121,21 +122,23 @@ function Set-ProgressEx {
 
         function Complete-ChilrenProgress($Ids) {
             while ($Ids -ne $null) {
-                $Ids2 = $ProgressEx.Keys | Where-Object { $ProgressEx[$_].ParentId -in $Ids }
-                $Ids = $Ids2 | ForEach-Object {
-                    Write-Progress -Completed -Activity '.' -id $_
-                    Complete-Progress $_
-                }
+                # $tmp used to avoid undefined behavior with $Ids inside and outside the pipe. Let me know if $tmp is not needed.
+                $tmp = $ProgressEx.Keys | Where-Object { $ProgressEx[$_].ParentId -in $Ids }
+                $Ids = $tmp
+
+                # It should be outside the $ProgressEx-pipe because Complete-Progress changes $ProgressEx.
+                $Ids | ForEach-Object { Complete-Progress $_ }
             }
         }
 
         if ( $Info.id -ge 0 ) {
             $ProgressEx[$Info.Id] = $Info
 
-            Write-ProgressStd $Info
-
             if ( $Info.Completed ) {
                 Complete-Progress $Info.Id
+            }
+            else {
+                Write-ProgressStd $Info
             }
 
             # A set-action with a progress is a cause to complete all children
