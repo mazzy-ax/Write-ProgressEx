@@ -121,8 +121,8 @@ function Set-ProgressEx {
 
         function Complete-ChilrenProgress($Ids) {
             while ($Ids -ne $null) {
-                $Ids = $ProgressEx.Keys | Where-Object { $ProgressEx[$_].ParentId -in $Ids }
-                $Ids | ForEach-Object {
+                $Ids2 = $ProgressEx.Keys | Where-Object { $ProgressEx[$_].ParentId -in $Ids }
+                $Ids = $Ids2 | ForEach-Object {
                     Write-Progress -Completed -Activity '.' -id $_
                     Complete-Progress $_
                 }
