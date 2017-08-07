@@ -3,7 +3,7 @@
 
 
 $ProgressEx = @{}
-$StdParmNames = (Get-Command Write-Progress).Parameters.GetEnumerator() | Select-Object -ExpandProperty Key
+$StdParmNames = (Get-Command Write-Progress).Parameters.Keys
 
 <#
 .SYNOPSIS
@@ -97,7 +97,7 @@ function Set-ProgressEx {
         function Write-ProgressStd($pInfo) {
             # Invoke standard write-progress cmdlet
             $pArgs = @{}
-            $pInfo.GetEnumerator() | Where-Object { $_.name -in $StdParmNames } | ForEach-Object { $pArgs.Add( $_.name, $_.value ) }
+            $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
 
             if ( $pInfo.Total ) {
                 $pArgs.Activity = ($pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': ')
