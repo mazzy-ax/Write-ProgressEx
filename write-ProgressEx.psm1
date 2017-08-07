@@ -121,13 +121,10 @@ function Set-ProgressEx {
 
         function Complete-ChilrenProgress($Ids) {
             while ($Ids -ne $null) {
-                $Ids = $ProgressEx.GetEnumerator() `
-                    | Where-Object { $_.Value -and ($_.Value.ParentId -ne $null) -and ($_.Value.ParentId -in $Ids) } `
-                    | Select-Object -ExpandProperty Key
-
+                $Ids = $ProgressEx.Keys | Where-Object { $ProgressEx[$_].ParentId -in $Ids }
                 $Ids | ForEach-Object {
                     Write-Progress -Completed -Activity '.' -id $_
-                    Complete-Progress($_)
+                    Complete-Progress $_
                 }
             }
         }
@@ -138,7 +135,7 @@ function Set-ProgressEx {
             Write-ProgressStd $Info
 
             if ( $Info.Completed ) {
-                Complete-Progress($Info.Id)
+                Complete-Progress $Info.Id
             }
 
             # A set-action with a progress is a cause to complete all children
@@ -246,7 +243,7 @@ function Write-ProgressEx {
             }
 
             if ( -not $pInfo.ParentId ) {
-                $ParentInfo = ($ProgressEx.GetEnumerator() | Where-Object { $_.Key -lt $id } | Select-Object -ExpandProperty Key | Measure-Object -Maximum).Maximum
+                $ParentInfo = ($ProgressEx.Keys | Where-Object { $_ -lt $pInfo.id } | Measure-Object -Maximum).Maximum
                 if ( $ParentInfo -ne $null ) {
                     $pInfo.ParentId = $ParentInfo
                 }
