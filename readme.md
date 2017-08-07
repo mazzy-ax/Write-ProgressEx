@@ -1,4 +1,4 @@
-mazzy@mazzy.ru, 2017-08-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-08-08, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Write-ProgressEx: extended write-progress cmdlet
 
@@ -18,7 +18,9 @@ The cmdlet:
 
 Note: the cmdlet is not safe with multi-thread.
 
-## Samples
+## [Changelog]
+
+# Samples
 
 ```powershell
 $range1 = 1..20
@@ -61,10 +63,8 @@ write-ProgressEx #close all progress bars
 
 More samples are in the folder [Samples].
 
-[CHANGELOG.md][Changelog]
 
-
-[version-badge]: https://img.shields.io/badge/version-0.7-green.svg
+[version-badge]: https://img.shields.io/badge/version-0.8-green.svg
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [Samples]: /samples
 [Changelog]: /CHANGELOG.md

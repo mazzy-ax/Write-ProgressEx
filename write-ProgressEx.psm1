@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-08-06
+# mazzy@mazzy.ru, 2017-08-08
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 
@@ -111,38 +111,33 @@ function Set-ProgressEx {
             Write-Progress @pArgs
         }
 
-        function Complete-Progress($Id) {
-            if ( $ProgressEx.ContainsKey($Id) ) {
-                Write-Progress -Completed -Activity '.' -id $Id
-                $ProgressEx[$Id].Completed = $true
-                $ProgressEx[$Id].Stopwatch = $null
-                $ProgressEx.Remove($Id)
-            }
-        }
-
-        function Complete-ChilrenProgress($Ids) {
+        function Complete-ProgressAndChilren($Ids, $CompleteNow) {
             while ($Ids -ne $null) {
-                # $tmp used to avoid undefined behavior with $Ids inside and outside the pipe. Let me know if $tmp is not needed.
+                # Complete
+                $Ids | Where-Object { $CompleteNow -and ($_ -in $ProgressEx.Keys) } | ForEach-Object {
+                    Write-Progress -Completed -Activity '.' -id $_
+                    $ProgressEx[$_].Completed = $true
+                    $ProgressEx[$_].Stopwatch = $null
+                    $ProgressEx.Remove($_)
+                }
+
+                # Find children. $tmp used to avoid undefined behavior with $Ids inside and outside the pipe. Let me know if $tmp is not needed.
                 $tmp = $ProgressEx.Keys | Where-Object { $ProgressEx[$_].ParentId -in $Ids }
                 $Ids = $tmp
 
-                # It should be outside the $ProgressEx-pipe because Complete-Progress changes $ProgressEx.
-                $Ids | ForEach-Object { Complete-Progress $_ }
+                # Complete children anyway
+                $CompleteNow = $true
             }
         }
 
-        if ( $Info.id -ge 0 ) {
+        if ( $Info.id -ne $null ) {
             $ProgressEx[$Info.Id] = $Info
 
-            if ( $Info.Completed ) {
-                Complete-Progress $Info.Id
-            }
-            else {
+            if ( -not $Info.Completed ) {
                 Write-ProgressStd $Info
             }
 
-            # A set-action with a progress is a cause to complete all children
-            Complete-ChilrenProgress $Info.id
+            Complete-ProgressAndChilren $Info.id -CompleteNow $Info.Completed
         }
     }
 }

@@ -1,8 +1,15 @@
 # Changelog
 
-mazzy@mazzy.ru, 2017-08-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-08-08, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 All notable changes to this project will be documented in this file.
+
+## [v0.8] - 2017-08-08
+
+## Changed
+
+- Minor improvements with useage of parameter storage $ProgressEx
+- The function Complete-progressAndChildren refactored
 
 ## [v0.7] - 2017-08-06
 
@@ -35,4 +42,5 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
+[v0.8]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.7...v0.8
 [v0.7]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.6...v0.7
