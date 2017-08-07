@@ -113,7 +113,7 @@ function Set-ProgressEx {
 
         function Complete-Progress($Id) {
             if ( $ProgressEx.ContainsKey($Id) ) {
-                Write-Progress -Completed -Activity '.' -id $_
+                Write-Progress -Completed -Activity '.' -id $Id
                 $ProgressEx[$Id].Completed = $true
                 $ProgressEx[$Id].Stopwatch = $null
                 $ProgressEx.Remove($Id)
