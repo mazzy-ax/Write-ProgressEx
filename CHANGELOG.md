@@ -6,15 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.9] - 2017-08-09
 
-## Changed
-
 - Samples simplified
 - Cancel stopwatch if -SecondsRemaining parameter specified
 
 
 ## [v0.8] - 2017-08-08
-
-## Changed
 
 - Minor improvements with useage of parameter storage $ProgressEx
 - The function Complete-progressAndChildren refactored
