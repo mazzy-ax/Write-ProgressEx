@@ -228,10 +228,6 @@ function Write-ProgressEx {
             $pInfo.SourceId = $SourceId
         }
 
-        if ( $stopwatch ) {
-            $pInfo.stopwatch = $stopwatch
-        }
-
         if ( $total ) {
             $pInfo.Total = $total
 
@@ -279,6 +275,10 @@ function Write-ProgressEx {
         elseif ( $isCalcPossible -and $pInfo.stopwatch  ) {
             $stopwatch = [System.Diagnostics.Stopwatch]$pInfo.stopwatch
             $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
+        }
+
+        if ( $stopwatch ) {
+            $pInfo.stopwatch = $stopwatch
         }
 
         if ( $Status ) {
