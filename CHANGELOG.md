@@ -1,8 +1,15 @@
 # Changelog
 
-mazzy@mazzy.ru, 2017-08-08, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-08-09, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 All notable changes to this project will be documented in this file.
+
+## [v0.9] - 2017-08-09
+
+## Changed
+
+- Samples simplified
+
 
 ## [v0.8] - 2017-08-08
 
@@ -42,5 +49,6 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
+[v0.9]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.8...v0.9
 [v0.8]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.7...v0.8
 [v0.7]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.6...v0.7
