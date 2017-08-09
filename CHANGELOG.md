@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ## Changed
 
 - Samples simplified
+- Cancel stopwatch if -SecondsRemaining parameter specified
 
 
 ## [v0.8] - 2017-08-08

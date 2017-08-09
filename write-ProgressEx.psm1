@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-08-08
+# mazzy@mazzy.ru, 2017-08-09
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 
@@ -274,6 +274,7 @@ function Write-ProgressEx {
 
         if ( $SecondsRemaining ) {
             $pInfo.SecondsRemaining = $SecondsRemaining
+            $pInfo.stopwatch = $null
         }
         elseif ( $isCalcPossible -and $pInfo.stopwatch  ) {
             $stopwatch = [System.Diagnostics.Stopwatch]$pInfo.stopwatch
