@@ -4,7 +4,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-# RootModule = ''
+RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
 ModuleVersion = '0.10'
@@ -25,7 +25,7 @@ CompanyName = 'mazzy'
 Copyright = '(c) 2017 by mazzy. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Powershell Extended Write-Progress cmdlet'
+Description = 'Native powershell module extended Write-Progress cmdlet'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '4.0'
@@ -64,10 +64,10 @@ PowerShellVersion = '4.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx'
+FunctionsToExport = '*'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = 'Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx'
+CmdletsToExport = '*'
 
 # Variables to export from this module
 # VariablesToExport = @()
@@ -90,7 +90,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'ProgressEx','Progress','ProgressBar','Write-Progress','write-ProgressEx'
+        Tags = 'Progress','ProgressBar','Write-Progress'
 
         # A URL to the license for this module.
         # LicenseUri = ''
