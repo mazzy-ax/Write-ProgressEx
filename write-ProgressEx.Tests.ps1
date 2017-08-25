@@ -1,7 +1,7 @@
-# mazzy@mazzy.ru, 2017-08-06
-# https://github.com/mazzy-ax/write-progressEx
+# mazzy@mazzy.ru, 2017-08-25
+# https://github.com/mazzy-ax/Write-progressEx
 
-Import-Module -Force ".\write-ProgressEx.psm1"
+Import-Module -Force ".\Write-ProgressEx.psm1"
 
 Describe "Write-ProgressEx" {
     $outerLevel = 1..3
@@ -9,94 +9,106 @@ Describe "Write-ProgressEx" {
 
     Context "Example" {
         It "work" {
-            { write-ProgressEx } | Should not throw
+            { Write-ProgressEx } | Should not throw
         }
 
         It "double trouble work" {
-            { write-ProgressEx; write-ProgressEx } | Should not throw
+            { Write-ProgressEx; Write-ProgressEx } | Should not throw
         }
 
         It "parameters: outer and inner loops" {
             {
-                write-ProgressEx "outer" -Total $outerLevel.Count
+                Write-ProgressEx "outer" -Total $outerLevel.Count
                 $outerLevel | ForEach-Object {
-                    write-ProgressEx "inner" -Total $innerLevel.Count -id 1
+                    Write-ProgressEx "inner" -Total $innerLevel.Count -id 1
                     $innerLevel | ForEach-Object {
                         #start-sleep 1
-                        write-ProgressEx -id 1 -increment
+                        Write-ProgressEx -id 1 -increment
                     }
-                    write-ProgressEx -increment
+                    Write-ProgressEx -increment
                 }
-                write-ProgressEx -complete
+                Write-ProgressEx -complete
             } | Should not throw
         }
 
         It "pipes: outer and inner loops" {
             {
-                write-ProgressEx "outer" -Total $outerLevel.Count
-                $outerLevel | write-ProgressEx | ForEach-Object {
-                    write-ProgressEx "inner" -Total $innerLevel.Count -id 1
-                    $innerLevel | write-ProgressEx -id 1 | ForEach-Object {
-                        #start-sleep 1
+                $outerLevel | Write-ProgressEx "outer" -Total $outerLevel.Count | ForEach-Object {
+                    $innerLevel | Write-ProgressEx "inner" -Total $innerLevel.Count -id 1 | ForEach-Object {
+                        # ...
                     }
                 }
-                write-ProgressEx -complete
             } | Should not throw
         }
 
         It "progress info: splatting" {
             {
-                write-ProgressEx "outer" -Total $outerLevel.Count
-                $outerLevel | write-ProgressEx | ForEach-Object {
+                Write-ProgressEx "outer" -Total $outerLevel.Count
+                $outerLevel | Write-ProgressEx | ForEach-Object {
                     $pInfo = Get-ProgressEx
                     $pInfo.status = 'another status'
-                    write-ProgressEx @pInfo
+                    Write-ProgressEx @pInfo
                 }
-                write-ProgressEx -complete
+                Write-ProgressEx -complete
             } | Should not throw
         }
     }
 
     Context "functional" {
         It "store paramters in module variable" {
-            write-ProgressEx -Total $outerLevel.Count
+            Write-ProgressEx -Total $outerLevel.Count
             (Get-ProgressEx).Total | Should be $outerLevel.Count
         }
 
-        It "increment counter after the total updated" {
-            write-ProgressEx -Total $outerLevel.Count
+        It "increment counter after the increment" {
+            Write-ProgressEx -Total $outerLevel.Count
             (Get-ProgressEx).current | Should be 0
 
-            write-ProgressEx -increment
+            Write-ProgressEx -increment
             (Get-ProgressEx).current | Should be 1
         }
 
+        It "autocomplete with pipe" {
+            $outerLevel | Write-ProgressEx "outer" -Total $outerLevel.Count | ForEach-Object {
+                $innerLevel | Write-ProgressEx "inner" -Total $innerLevel.Count -id 1 | ForEach-Object {
+                    # ...
+                    (Get-ProgressEx -id 0).Total | Should be $outerLevel.Count
+                    (Get-ProgressEx -id 1).Total | Should be $innerLevel.Count
+                    break
+                }
+                (Get-ProgressEx -id 0).Total | Should be $outerLevel.Count
+                (Get-ProgressEx -id 1).Total | Should be $null
+                break
+            }
+            (Get-ProgressEx -id 0) | Should be $null
+        }
+
         It "complete children progress when 'previous' id used" {
-            write-ProgressEx -Total $outerLevel.Count
-            write-ProgressEx -Total $innerLevel.Count -id 1
-            (Get-ProgressEx).current | Should be 0
+            Write-ProgressEx -Total $outerLevel.Count
+            Write-ProgressEx -Total $innerLevel.Count -id 1
+            (Get-ProgressEx -id 0).current | Should be 0
             (Get-ProgressEx -id 1).current | Should be 0
 
-            write-ProgressEx -id 1 -increment
-            (Get-ProgressEx).current | Should be 0
+            Write-ProgressEx -id 1 -increment
+            (Get-ProgressEx -id 0).current | Should be 0
             (Get-ProgressEx -id 1).current | Should be 1
 
-            write-ProgressEx -id 0 -increment
+            Write-ProgressEx -id 0 -increment
             (Get-ProgressEx -id 0).current | Should be 1
             (Get-ProgressEx -id 1) | Should be $null
 
-            write-ProgressEx
-            (Get-ProgressEx) | Should be $null
+            Write-ProgressEx
+            (Get-ProgressEx -id 0) | Should be $null
         }
 
         It "without parameters complete all children progresses" {
-            write-ProgressEx "outerLevel" -Total $outerLevel.Count
-            write-ProgressEx "innerLevel" -Total $innerLevel.Count -id 1
+            Write-ProgressEx "outerLevel" -Total $outerLevel.Count
+            Write-ProgressEx "innerLevel" -Total $innerLevel.Count -id 1
 
-            (Get-ProgressEx).Total | Should be $outerLevel.Count
+            (Get-ProgressEx -id 0).Total | Should be $outerLevel.Count
             (Get-ProgressEx -id 1).Total | Should be $innerLevel.Count
 
-            write-ProgressEx
+            Write-ProgressEx
             (Get-ProgressEx) | Should be $null
             (Get-ProgressEx -id 1) | Should be $null
         }

@@ -1,14 +1,22 @@
+
+mazzy@mazzy.ru, 2017-08-25, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+
 # Changelog
 
-mazzy@mazzy.ru, 2017-08-09, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
-
 All notable changes to this project will be documented in this file.
+
+## [v0.10] - 2017-08-25
+
+- Autocomplete with pipe
+- Add autocomplete with pipe test
+- Samples readme[!!!]
+- Module name First letter capitalized
+- Requires version 4.0
 
 ## [v0.9] - 2017-08-09
 
 - Samples simplified
 - Cancel stopwatch if -SecondsRemaining parameter specified
-
 
 ## [v0.8] - 2017-08-08
 
@@ -17,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.7] - 2017-08-06
 
-### Main target
+### Main goal
 
 - Move parmeter storage from a global to a module scope
 - Provide a developer with functional to get/set actual parameters
@@ -46,6 +54,7 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
+[v0.10]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.9...v0.10
 [v0.9]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.8...v0.9
 [v0.8]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.7...v0.8
 [v0.7]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.6...v0.7

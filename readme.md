@@ -1,39 +1,59 @@
-mazzy@mazzy.ru, 2017-08-09, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-08-25, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Write-ProgressEx: extended write-progress cmdlet
 
 ![version][version-badge] ![license][license-badge]
 
-**Write-ProgressEx** extend the functionality of the standard powershell cmdlet. It provide a simple way to use -PercentComplete and -SecondsRemaining switches.
+**Write-ProgressEx** extend the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.
 
 The cmdlet:
+
 * works with pipe;
 * works with empty activity string;
+* automatically completes with pipe;
 * automatically displays totals;
-* automatically calculate percents;
+* automatically calculates percents;
+* automatically arrange inner loop by id - parentId is optional now;
 * uses [system.diagnostic.stopwatch] to calculate remaning seconds;
 * completes all inner progresses if no parameters;
 * stores totals, current values and actual parameters into the module hashtable;
-* provide get/set cmdlets to access actual parameters
+* provide get/set cmdlets to access actual parameters.
 
-Note: the cmdlet is not safe with multi-thread.
+Note 1: The cmdlet is a powershell native and does not use an external libs or dll.
 
-## [Changelog]
+Note 2: the cmdlet is not safe with multi-thread.
 
-# Samples
+# Installation
+
+Automatic install Write-ProgressEx module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/write-ProgressEx):
+
+```powershell
+Install-Module -Name Write-ProgressEx
+Import-Module Write-ProgressEx
+```
+
+or manual:
+* Download and unblock the latest .zip file.
+* Extract the .zip into your $PSModulePath, e.g.~\Documents\WindowsPowerShell\Modules.
+* Ensure the extracted folder is named 'Write-ProgressEx'.
+* Run 'Import-Module Write-ProgressEx'.
+
+# Changelog
+
+See file [CHANGELOG.md]
+
+# Examples
 
 ```powershell
 $range1 = 1..20
-$range1 | write-ProgressEx "loop 1" -Total $range1.Count -increment | ForEach-Object {
-        # ....
-    }
+$range1 | write-ProgressEx "loop 1" -Total $range1.Count -Increment | ForEach-Object {
+    # ....
 }
 
 $range2 = 1..15
 $range2 | ForEach-Object {
-        # ....
-        write-ProgressEx "loop 2" -Total $range2.Count -increment
-    }
+    # ....
+    write-ProgressEx "loop 2" -Total $range2.Count -Increment
 }
 
 write-ProgressEx #close all progress bars
@@ -54,15 +74,14 @@ $outer | write-ProgressEx -Status "outer" | ForEach-Object {
     }
 
 }
-write-ProgressEx #close all progress bars
 ```
 
-![screenshot: Write-ProgressEx](./media/sample.pipe.png)
+![screenshot: Write-ProgressEx](./Media/examples.pipe.png)
 
 More samples are in the folder [Samples].
 
 
 [version-badge]: https://img.shields.io/badge/version-0.9-green.svg
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[Samples]: /samples
-[Changelog]: /CHANGELOG.md
+[Examples]: /examples
+[CHANGELOG.md]: /CHANGELOG.md

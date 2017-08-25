@@ -1,25 +1,26 @@
-# mazzy@mazzy.ru, 2017-08-09
+# mazzy@mazzy.ru, 2017-08-25
 # https://github.com/mazzy-ax/Write-ProgressEx
 
+#requires -version 4.0
 
 $ProgressEx = @{}
 $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
 
-<#
-.SYNOPSIS
+function Get-ProgressEx {
+    <#
+    .SYNOPSIS
     Get or Create hashtable for progress with Id.
 
-.DESCRIPTION
+    .DESCRIPTION
     This cmdlet returns an hashtable related the progress with an Id.
     The hashtable contain activity string, current and total counters, remain seconds, PercentComplete and other progress parameters.
-
     The cmdlet returns $null if an Id was not used yet.
     It returns new hashtable if $force specified and an Id was not used.
 
-.NOTES
+    .NOTES
     A developer can modify values and use the hashtable for splatting into Write-ProgressEx.
 
-.EXAMPLE
+    .EXAMPLE
     $range = 1..1000
     write-ProgressEx 'wait, please' -Total $range.Count
     $range | write-ProgressEx | ForEach-Object {
@@ -33,8 +34,7 @@ $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
     The splatting to Write-ProgressEx is a common pattern to use progress info:
     It's recalculate parameters and refresh progress on the console.
 
-#>
-function Get-ProgressEx {
+    #>
     [cmdletbinding()]
     [OutputType([hashtable])]
     param(
@@ -60,18 +60,19 @@ function Get-ProgressEx {
     }
 }
 
-<#
-.SYNOPSIS
+function Set-ProgressEx {
+    <#
+    .SYNOPSIS
     Set parameters for the progress with Id and dispaly this values to the console.
 
-.DESCRIPTION
+    .DESCRIPTION
     The cmdlet:
     * save parameters
     * display this parameters to console
     * complete progress if Completed parameter is $true
     * complete all children progresses always.
 
-.EXAMPLE
+    .EXAMPLE
     $range = 1..1000
     write-ProgressEx 'wait, please' -Total $range.Count
     $range | write-ProgressEx | ForEach-Object {
@@ -85,8 +86,7 @@ function Get-ProgressEx {
     It's no recalulate. It refresh progress on the console only.
     Write-ProgressEx recommended.
 
-#>
-function Set-ProgressEx {
+    #>
     [cmdletbinding()]
     param(
         [Parameter(ValueFromPipeline = $true, Position = 0)]
@@ -142,11 +142,12 @@ function Set-ProgressEx {
     }
 }
 
-<#
-.SYNOPSIS
+function Write-ProgressEx {
+    <#
+    .SYNOPSIS
     Powershell Extended Write-Progress cmdlet.
 
-.EXAMPLE
+    .EXAMPLE
     Write-ProgressEx -Total $nodes.Count
     $nodes | Where-Object ...... | ForEach-Object {
         Write-ProgressEx -Total $names.Count -id 1
@@ -158,7 +159,7 @@ function Set-ProgressEx {
     }
     write-posProgress -complete
 
-.EXAMPLE
+    .EXAMPLE
     Write-ProgressEx -Total $nodes.Count
     $nodes | Where-Object ...... | Write-ProgressEx | ForEach-Object {
         Write-ProgressEx -Total $names.Count -id 1
@@ -168,7 +169,7 @@ function Set-ProgressEx {
     }
     Write-ProgressEx -complete
 
-.EXAMPLE
+    .EXAMPLE
     Ideal: is it possible?
 
     $nodes | Where-Object ...... | Write-ProgressEx | ForEach-Object {
@@ -178,16 +179,18 @@ function Set-ProgressEx {
     }
     write-posProgress -complete
 
-.NOTE
+    .NOTE
     Commands 'Write-ProgressEx.ps1' and 'Write-ProgressEx -Complete' are equivalents.
     The cmdlet complete all children progresses.
-.NOTE
+
+    .NOTE
     A developer can use a parameter splatting.
     See Get-ProgressEx example.
-.NOTE
+
+    .NOTE
     Cmdlet is not safe with multi-thread.
-#>
-function Write-ProgressEx {
+
+    #>
     [cmdletbinding()]
     param(
         # Extended parameters
@@ -303,6 +306,15 @@ function Write-ProgressEx {
         # PassThru
         if ( $inputObject ) {
             $inputObject
+        }
+    }
+
+    end {
+        if( $MyInvocation.PipelineLength -gt 1 ) {
+            Set-ProgressEx @{
+                id=$Id
+                Completed=$true
+            }
         }
     }
 }
