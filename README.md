@@ -78,10 +78,10 @@ $outer | write-ProgressEx -Status "outer" | ForEach-Object {
 
 ![screenshot: Write-ProgressEx](./Media/examples.pipe.png)
 
-More samples are in the folder [Samples].
+More samples are in the folder [Examples].
 
 
 [version-badge]: https://img.shields.io/badge/version-0.10-green.svg
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[Examples]: /examples
+[Examples]: /Examples
 [CHANGELOG.md]: /CHANGELOG.md
