@@ -10,37 +10,18 @@ The cmdlet:
 
 * works with pipe;
 * works with empty activity string;
+* uses [system.diagnostic.stopwatch] to calculate remaning seconds;
+* completes all inner progresses if no parameters;
 * automatically completes with pipe;
 * automatically displays totals;
 * automatically calculates percents;
 * automatically arrange inner loop by id - parentId is optional now;
-* uses [system.diagnostic.stopwatch] to calculate remaning seconds;
-* completes all inner progresses if no parameters;
 * stores totals, current values and actual parameters into the module hashtable;
 * provide get/set cmdlets to access actual parameters.
 
 Note 1: The cmdlet is a powershell native and does not use an external libs or dll.
 
 Note 2: the cmdlet is not safe with multi-thread.
-
-# Installation
-
-Automatic install Write-ProgressEx module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/write-ProgressEx):
-
-```powershell
-Install-Module -Name Write-ProgressEx
-Import-Module Write-ProgressEx
-```
-
-or manual:
-* Download and unblock the latest .zip file.
-* Extract the .zip into your $PSModulePath, e.g.~\Documents\WindowsPowerShell\Modules.
-* Ensure the extracted folder is named 'Write-ProgressEx'.
-* Run 'Import-Module Write-ProgressEx'.
-
-# Changelog
-
-See file [CHANGELOG.md]
 
 # Examples
 
@@ -80,6 +61,25 @@ $outer | write-ProgressEx -Status "outer" | ForEach-Object {
 
 More samples are in the folder [Examples].
 
+# Installation
+
+Automatic install Write-ProgressEx module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/write-ProgressEx):
+
+```powershell
+Install-Module -Name Write-ProgressEx
+Import-Module Write-ProgressEx
+```
+
+or manual:
+
+* Download and unblock the latest .zip file.
+* Extract the .zip into your $PSModulePath, e.g.~\Documents\WindowsPowerShell\Modules.
+* Ensure the extracted folder is named 'Write-ProgressEx'.
+* Run 'Import-Module Write-ProgressEx'.
+
+# Changelog
+
+See file [CHANGELOG.md]
 
 [version-badge]: https://img.shields.io/badge/version-0.10-green.svg
 [license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
