@@ -70,6 +70,12 @@ Install-Module -Name Write-ProgressEx
 Import-Module Write-ProgressEx
 ```
 
+Automatic install Write-ProgressEx module from the [NuGet.org](https://www.nuget.org/packages/Write-ProgressEx):
+
+```powershell
+Install-Package -Name Write-ProgressEx
+Import-Module Write-ProgressEx
+```
 or manual:
 
 * Download and unblock the latest .zip file.
