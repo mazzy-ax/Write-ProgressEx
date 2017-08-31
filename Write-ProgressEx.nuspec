@@ -12,14 +12,15 @@
     <tags>Progress ProgressBar Write-Progress</tags>
   </metadata>
   <files>
-    <file src="Write-ProgressEx.psm1" target="$targetBase$" />
-    <file src="Write-ProgressEx.psd1" target="$targetBase$" />
-    <file src="Write-ProgressEx.Tests.ps1" target="$targetBase$" />
-    <file src="Write-ProgressEx.nuspec" target="$targetBase$" />
-    <file src="LICENSE*" target="$targetBase$" />
-    <file src="README.md" target="$targetBase$" />
-    <file src="CHANGELOG.md" target="$targetBase$" />
-    <file src="Examples\**\*.*" target="$targetBase$\Examples" />
-    <file src="Media\**\*.*" target="$targetBase$\Media" />
+    <file src="Write-ProgressEx.psm1" />
+    <file src="Write-ProgressEx.psd1" />
+    <file src="Write-ProgressEx.Tests.ps1" />
+    <file src="Write-ProgressEx.nuspec" />
+    <file src="chocolateyInstall.ps1" />
+    <file src="LICENSE*" />
+    <file src="README.md" />
+    <file src="CHANGELOG.md" />
+    <file src="Examples\**\*.*" target="\Examples" />
+    <file src="Media\**\*.*" target="\Media" />
   </files>
 </package>
