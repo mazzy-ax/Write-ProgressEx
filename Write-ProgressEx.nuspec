@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Write-ProgressEx</id>
+    <version>0.10</version>
+    <authors>Sergey Mazurkin</authors>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/mazzy-ax/Write-ProgressEx</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Native powershell module extended Write-Progress cmdlet</description>
+    <releaseNotes>Write-ProgressEx extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.</releaseNotes>
+    <tags>Progress ProgressBar Write-Progress</tags>
+  </metadata>
+  <files>
+    <file src="Write-ProgressEx.psm1" target="$targetBase$" />
+    <file src="Write-ProgressEx.psd1" target="$targetBase$" />
+    <file src="Write-ProgressEx.Tests.ps1" target="$targetBase$" />
+    <file src="LICENSE*" target="$targetBase$" />
+    <file src="README.md" target="$targetBase$" />
+    <file src="CHANGELOG.md" target="$targetBase$" />
+    <file src="Examples\**\*.*" target="$targetBase$\Examples" />
+    <file src="Media\**\*.*" target="$targetBase$\Media" />
+  </files>
+</package>

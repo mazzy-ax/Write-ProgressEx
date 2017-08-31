@@ -22,7 +22,7 @@ Author = 'Sergey Mazurkin <mazzy@mazzy.ru>'
 CompanyName = 'mazzy'
 
 # Copyright statement for this module
-Copyright = '(c) 2017 by mazzy. All rights reserved.'
+Copyright = 'Copyright (c) 2017 Sergey Mazurkin, licensed under Apache 2.0 License.'
 
 # Description of the functionality provided by this module
 Description = 'Native powershell module extended Write-Progress cmdlet'
