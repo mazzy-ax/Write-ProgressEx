@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-08-25
+# mazzy@mazzy.ru, 2017-10-03
 # https://github.com/mazzy-ax/Write-progressEx
 
 Import-Module -Force ".\Write-ProgressEx.psm1"
@@ -27,7 +27,7 @@ Describe "Write-ProgressEx" {
                     }
                     Write-ProgressEx -increment
                 }
-                Write-ProgressEx -complete
+                Write-ProgressEx -Completed
             } | Should not throw
         }
 
@@ -49,7 +49,7 @@ Describe "Write-ProgressEx" {
                     $pInfo.status = 'another status'
                     Write-ProgressEx @pInfo
                 }
-                Write-ProgressEx -complete
+                Write-ProgressEx -Completed
             } | Should not throw
         }
     }

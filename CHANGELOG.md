@@ -1,15 +1,21 @@
 
-mazzy@mazzy.ru, 2017-08-25, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-03, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Changelog
 
 All notable changes to this project will be documented in this file.
 
+## [v0.11] - 2017-10-03
+
+- The icon added
+- FunctionsToExport fixed
+- Begin and End messages added
+
 ## [v0.10] - 2017-08-25
 
 - Autocomplete with pipe
 - Add autocomplete with pipe test
-- Samples readme[!!!]
+- Examples readme
 - Module name First letter capitalized
 - Requires version 4.0
 
@@ -54,6 +60,7 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
+[v0.10]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.10...v0.11
 [v0.10]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.9...v0.10
 [v0.9]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.8...v0.9
 [v0.8]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.7...v0.8

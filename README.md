@@ -1,10 +1,14 @@
-mazzy@mazzy.ru, 2017-08-25, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-03, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+
+![version](https://img.shields.io/badge/version-0.10-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
+
+---
 
 # Write-ProgressEx: extended write-progress cmdlet
 
-![version][version-badge] ![license][license-badge]
-
 **Write-ProgressEx** extend the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.
+
+![icon](/Media/Write-ProgressEx-icon.png "Write-ProgressEx")
 
 The cmdlet:
 
@@ -59,7 +63,7 @@ $outer | write-ProgressEx -Status "outer" | ForEach-Object {
 
 ![screenshot: Write-ProgressEx](./Media/examples.pipe.png)
 
-More samples are in the folder [Examples].
+More samples are in the folder [Examples](/Examples).
 
 # Installation
 
@@ -76,18 +80,15 @@ Automatic install Write-ProgressEx module from the [NuGet.org](https://www.nuget
 Install-Package -Name Write-ProgressEx
 Import-Module Write-ProgressEx
 ```
+
 or manual:
 
 * Download and unblock the latest .zip file.
-* Extract the .zip into your $PSModulePath, e.g.~\Documents\WindowsPowerShell\Modules.
+* Extract the .zip into your $PSModulePath, e.g. ~\Documents\WindowsPowerShell\Modules.
 * Ensure the extracted folder is named 'Write-ProgressEx'.
+* Set an execution policy to RemoteSigned or Unrestricted to execute not signed modules 'Set-ExecutionPolicy RemoteSigned'.
 * Run 'Import-Module Write-ProgressEx'.
 
 # Changelog
 
-See file [CHANGELOG.md]
-
-[version-badge]: https://img.shields.io/badge/version-0.10-green.svg
-[license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[Examples]: /Examples
-[CHANGELOG.md]: /CHANGELOG.md
+See file [CHANGELOG.md](/CHANGELOG.md).

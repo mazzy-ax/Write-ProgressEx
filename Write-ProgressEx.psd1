@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-08-25
+# mazzy@mazzy.ru, 2017-10-03
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 @{
@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.10'
+ModuleVersion = '0.11'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -28,7 +28,7 @@ Copyright = 'Copyright (c) 2017 Sergey Mazurkin, licensed under Apache 2.0 Licen
 Description = 'Native powershell module extended Write-Progress cmdlet'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '4.0'
+PowerShellVersion = '3.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -64,10 +64,10 @@ PowerShellVersion = '4.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = '*'
+FunctionsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = '*'
+CmdletsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
 
 # Variables to export from this module
 # VariablesToExport = @()
@@ -93,13 +93,13 @@ PrivateData = @{
         Tags = 'Progress','ProgressBar','Write-Progress'
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/mazzy-ax/Write-ProgressEx'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true'
 
         # ReleaseNotes of this module
         ReleaseNotes = 'Write-ProgressEx extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.'
