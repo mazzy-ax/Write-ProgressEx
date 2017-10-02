@@ -1,7 +1,7 @@
-# mazzy@mazzy.ru, 2017-08-25
+# mazzy@mazzy.ru, 2017-10-03
 # https://github.com/mazzy-ax/Write-ProgressEx
 
-#requires -version 4.0
+#requires -version 3.0
 
 $ProgressEx = @{}
 $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
@@ -94,7 +94,15 @@ function Set-ProgressEx {
     )
 
     process {
-        function Write-ProgressStd($pInfo) {
+        function Write-EndMessage ($Id) {
+            $pInfo = Get-ProgressEx $Id
+            if ( $pInfo -and $pInfo.Completed -and $pInfo.EndMessage ) {
+                $Message = -join $pInfo.EndMessage #TODO How to format apostrophe string?
+                Write-Output $Message
+            }
+        }
+
+        function Write-ProgressStd([hashtable]$pInfo) {
             # Invoke standard write-progress cmdlet
             $pArgs = @{}
             $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
@@ -118,6 +126,7 @@ function Set-ProgressEx {
                     Write-Progress -Completed -Activity '.' -id $_
                     $ProgressEx[$_].Completed = $true
                     $ProgressEx[$_].Stopwatch = $null
+                    Write-EndMessage $_
                     $ProgressEx.Remove($_)
                 }
 
@@ -193,17 +202,6 @@ function Write-ProgressEx {
     #>
     [cmdletbinding()]
     param(
-        # Extended parameters
-        [Parameter(ValueFromPipeline = $true)]
-        [object]$inputObject,
-
-        [ValidateRange(-1, [int]::MaxValue)]
-        [int]$total,
-        [ValidateRange(0, [int]::MaxValue)]
-        [int]$current,
-        [switch]$increment,
-        [System.Diagnostics.Stopwatch]$stopwatch,
-
         # Standard parameters for standard Powershell write-progress
         [Parameter(Position = 0)]
         [string]$Activity,
@@ -217,7 +215,24 @@ function Write-ProgressEx {
         [string]$CurrentOperation,
         [int]$ParentId,
         [int]$SourceId,
-        [switch]$Completed
+        [switch]$Completed,
+
+        # Extended parameters
+        [Parameter(ValueFromPipeline = $true)]
+        [object]$inputObject,
+
+        [ValidateRange(-1, [int]::MaxValue)]
+        [int]$total, # total iterations
+        [ValidateRange(0, [int]::MaxValue)]
+        [int]$current, # current iteration number
+        [ValidateRange(0, [int]::MaxValue)]
+        [int]$iterations, # number of executed iterations. It may be not equal to $current because of skip some iterations
+
+        [switch]$increment,
+        [System.Diagnostics.Stopwatch]$stopwatch,
+
+        [string[]]$BeginMessage,
+        [string[]]$EndMessage # = '$($pInfo.Id):$($pInfo.Activity) done. Iterations=$($pInfo.Iterations), Elapsed time=$($pInfo.stopwatch.Elapsed)'
     )
 
     process {
@@ -231,12 +246,25 @@ function Write-ProgressEx {
             $pInfo.SourceId = $SourceId
         }
 
+        if ( $BeginMessage ) {
+            $pInfo.BeginMessage = $BeginMessage
+        }
+
+        if ( $EndMessage ) {
+            $pInfo.EndMessage = $EndMessage
+        }
+
         if ( $total ) {
             $pInfo.Total = $total
 
             if ( -not $Increment -and -not $inputObject ) {
                 $pInfo.PercentComplete = 0
                 $pInfo.Current = 0
+
+                if ( $BeginMessage ) {
+                    $Message = -join $BeginMessage #TODO How to format apostrophe string?
+                    Write-Output $Message
+                }
             }
 
             if ( -not $pInfo.ParentId ) {
@@ -252,6 +280,10 @@ function Write-ProgressEx {
             }
         }
 
+        if ( $iterations ) {
+            $pInfo.Iterations = $iterations
+        }
+
         if ( $Current ) {
             $pInfo.Current = [Math]::Max(-1, [Math]::Min($Current, $pInfo.Total))
             $pInfo.stopwatch = $null
@@ -259,6 +291,7 @@ function Write-ProgressEx {
 
         if ( $Increment -or $inputObject ) {
             # next
+            $pInfo.Iterations += 1
             $pInfo.Current = [Math]::Min([Math]::Max(0, $pInfo.Current + 1), $pInfo.Total)
         }
 
@@ -310,13 +343,14 @@ function Write-ProgressEx {
     }
 
     end {
-        if( $MyInvocation.PipelineLength -gt 1 ) {
-            Set-ProgressEx @{
-                id=$Id
-                Completed=$true
-            }
+        if ( $MyInvocation.PipelineLength -gt 1 ) {
+            $pInfo = Get-ProgressEx -Id $id -Force
+            $pInfo.Completed = $true
+            Set-ProgressEx $pInfo
         }
     }
 }
 
-Export-ModuleMember -function Write-ProgressEx, Get-ProgressEx, Set-ProgressEx
+Export-ModuleMember `
+    -Cmdlet 'Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx' `
+    -Function 'Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx'
