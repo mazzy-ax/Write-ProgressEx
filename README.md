@@ -1,6 +1,6 @@
 mazzy@mazzy.ru, 2017-10-10, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
-![version](https://img.shields.io/badge/version-0.12-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
+![version](https://img.shields.io/badge/version-0.12.1-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ---
 
