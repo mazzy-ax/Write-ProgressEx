@@ -18,8 +18,8 @@ The cmdlet:
 * completes all inner progresses if no parameters;
 * automatically completes with pipe;
 * automatically calculates percents;
-* automatically displays totals on progress bar;
-* automatically arrange inner loop by id - parentId is optional now;
+* automatically displays current iteration and totals on progress bar;
+* automatically set parent id for a inner loop;
 * stores totals, current values and actual parameters into the module hashtable;
 * provide get/set cmdlets to access actual parameters;
 * display message with date, time, iterations and elapsed time on events:
