@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-10-03
+# mazzy@mazzy.ru, 2017-10-10
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #requires -version 3.0
@@ -49,7 +49,7 @@ function Get-ProgressEx {
         $pInfo = $ProgressEx[$Id]
 
         if ( $pInfo -is [hashtable] ) {
-            return $pInfo
+            return $pInfo.Clone()
         }
 
         if ( $Force ) {
@@ -59,6 +59,82 @@ function Get-ProgressEx {
         $null
     }
 }
+
+function Write-ProgressExMessage {
+    <#
+    .SYNOPSIS
+    Write a message to output.
+
+    .PARAMETER pInfo
+    The progress info returned by Get-ProgressEx
+
+    .PARAMETER Message
+    The message
+
+    .NOTES
+    This function is not exported
+    #>
+    [cmdletbinding()]
+    param(
+        [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [hashtable]$pInfo,
+
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
+        [string]$Message
+    )
+
+    process {
+        if ( $pInfo.ShowMessages -and $Message ) {
+            # message may use all variable values in all scope
+            $Message = Invoke-Expression $Message -ErrorAction SilentlyContinue
+
+            if ( $Message ) {
+                Write-Host $Message
+            }
+        }
+    }
+}
+
+function Write-ProgressExStd {
+    <#
+    .SYNOPSIS
+    Show standard Progress bar by $id or $pInfo
+
+    .PARAMETER pInfo
+    The progress info returned by Get-ProgressEx
+
+    .NOTES
+    This function is not exported
+    #>
+    [cmdletbinding()]
+    param(
+        [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [hashtable]$pInfo
+    )
+
+    process {
+        if ( -not $pInfo.NoShowProgressBar -and $pInfo ) {
+            # Invoke standard write-progress cmdlet
+            $pArgs = @{}
+            $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
+
+            if ( $pInfo.Total ) {
+                $pArgs.Activity = ($pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': ')
+            }
+            elseif ($pInfo.Current) {
+                $pArgs.Activity = ($pArgs.Activity, $pInfo.Current -join ': ')
+            }
+
+            # Activity is mandatory parameter for standard Write-Progress
+            if ( -not $pArgs.Activity ) {
+                $pArgs.Activity = '.'
+            }
+
+            Write-Progress @pArgs
+        }
+    }
+}
+
 
 function Set-ProgressEx {
     <#
@@ -89,44 +165,22 @@ function Set-ProgressEx {
     #>
     [cmdletbinding()]
     param(
-        [Parameter(ValueFromPipeline = $true, Position = 0)]
-        [hashtable]$Info
+        [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [hashtable]$pInfo
     )
 
     process {
-        function Write-EndMessage ($Id) {
-            $pInfo = Get-ProgressEx $Id
-            if ( $pInfo -and $pInfo.Completed -and $pInfo.EndMessage ) {
-                $Message = -join $pInfo.EndMessage #TODO How to format apostrophe string?
-                Write-Output $Message
-            }
-        }
-
-        function Write-ProgressStd([hashtable]$pInfo) {
-            # Invoke standard write-progress cmdlet
-            $pArgs = @{}
-            $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
-
-            if ( $pInfo.Total ) {
-                $pArgs.Activity = ($pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': ')
-            }
-
-            # Activity is mandatory parameter for standard Write-Progress
-            if ( -not $pArgs.Activity ) {
-                $pArgs.Activity = '.'
-            }
-
-            Write-Progress @pArgs
-        }
-
         function Complete-ProgressAndChilren($Ids, $CompleteNow) {
             while ($Ids -ne $null) {
                 # Complete
                 $Ids | Where-Object { $CompleteNow -and ($_ -in $ProgressEx.Keys) } | ForEach-Object {
-                    Write-Progress -Completed -Activity '.' -id $_
+
                     $ProgressEx[$_].Completed = $true
+
+                    Write-ProgressExMessage $ProgressEx[$_] $ProgressEx[$_].MessageOnEnd
+                    Write-ProgressExStd $ProgressEx[$_]
+
                     $ProgressEx[$_].Stopwatch = $null
-                    Write-EndMessage $_
                     $ProgressEx.Remove($_)
                 }
 
@@ -139,14 +193,30 @@ function Set-ProgressEx {
             }
         }
 
-        if ( $Info.id -ne $null ) {
-            $ProgressEx[$Info.Id] = $Info
+        if ( $pInfo ) {
 
-            if ( -not $Info.Completed ) {
-                Write-ProgressStd $Info
+            # events & messages
+            if ( -not $ProgressEx[$pInfo.Id].Stopwatch ) {
+                if( -not $pInfo.Stopwatch ) {
+                    $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+                }
+                Write-ProgressExMessage $pInfo $pInfo.MessageOnBegin
+            }
+            elseif ( $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity ) {
+                Write-ProgressExMessage $pInfo $pInfo.MessageOnNewActivity
+            }
+            elseif ( $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status ) {
+                Write-ProgressExMessage $pInfo $pInfo.MessageOnNewStatus
             }
 
-            Complete-ProgressAndChilren $Info.id -CompleteNow $Info.Completed
+            $ProgressEx[$pInfo.Id] = $pInfo
+
+            if ( -not $pInfo.Completed ) {
+                Write-ProgressExStd $pInfo
+            }
+
+            Complete-ProgressAndChilren $pInfo.id -CompleteNow $pInfo.Completed
+
         }
     }
 }
@@ -221,18 +291,24 @@ function Write-ProgressEx {
         [Parameter(ValueFromPipeline = $true)]
         [object]$inputObject,
 
-        [ValidateRange(-1, [int]::MaxValue)]
-        [int]$total, # total iterations
+        $total, # total iterations. [int] or [object[]]
         [ValidateRange(0, [int]::MaxValue)]
-        [int]$current, # current iteration number
-        [ValidateRange(0, [int]::MaxValue)]
-        [int]$iterations, # number of executed iterations. It may be not equal to $current because of skip some iterations
+        [int]$current, # current iteration number. It may be greather then $total.
 
         [switch]$increment,
         [System.Diagnostics.Stopwatch]$stopwatch,
 
-        [string[]]$BeginMessage,
-        [string[]]$EndMessage # = '$($pInfo.Id):$($pInfo.Activity) done. Iterations=$($pInfo.Iterations), Elapsed time=$($pInfo.stopwatch.Elapsed)'
+        # The Сmdlet does not call a standard write-progress cmdlet. Thus the progress bar does not show.
+        [switch]$NoProgressBar,
+
+        # The cmdlet output no messages
+        [switch]$ShowMessages,
+
+        # Message templates
+        [string]$MessageOnBegin = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."',
+        [string]$MessageOnNewActivity = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"',
+        [string]$MessageOnNewStatus = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"',
+        [string]$MessageOnEnd = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"'
     )
 
     process {
@@ -242,29 +318,17 @@ function Write-ProgressEx {
             $pInfo.ParentId = $ParentId
         }
 
-        if ( $SourceId ) {
-            $pInfo.SourceId = $SourceId
-        }
-
-        if ( $BeginMessage ) {
-            $pInfo.BeginMessage = $BeginMessage
-        }
-
-        if ( $EndMessage ) {
-            $pInfo.EndMessage = $EndMessage
-        }
-
         if ( $total ) {
-            $pInfo.Total = $total
+            if ( $total -is [object[]] ) {
+                $pInfo.Total = $total.Count
+            }
+            else {
+                $pInfo.Total = $total
+            }
 
             if ( -not $Increment -and -not $inputObject ) {
                 $pInfo.PercentComplete = 0
                 $pInfo.Current = 0
-
-                if ( $BeginMessage ) {
-                    $Message = -join $BeginMessage #TODO How to format apostrophe string?
-                    Write-Output $Message
-                }
             }
 
             if ( -not $pInfo.ParentId ) {
@@ -273,29 +337,18 @@ function Write-ProgressEx {
                     $pInfo.ParentId = $ParentInfo
                 }
             }
-
-            if ( -not $pInfo.stopwatch -and ($pInfo.Total -gt 0) ) {
-                $pInfo.SecondsRemaining = 0
-                $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-            }
-        }
-
-        if ( $iterations ) {
-            $pInfo.Iterations = $iterations
         }
 
         if ( $Current ) {
-            $pInfo.Current = [Math]::Max(-1, [Math]::Min($Current, $pInfo.Total))
-            $pInfo.stopwatch = $null
+            $pInfo.Current = $Current
         }
 
         if ( $Increment -or $inputObject ) {
             # next
-            $pInfo.Iterations += 1
-            $pInfo.Current = [Math]::Min([Math]::Max(0, $pInfo.Current + 1), $pInfo.Total)
+            $pInfo.Current = $pInfo.Current + 1
         }
 
-        $isCalcPossible = ($pInfo.Total -gt 0) -and ($pInfo.Current -gt 0)
+        $isCalcPossible = ($pInfo.Total -gt 0) -and ($pInfo.Current -gt 0) -and ($pInfo.Current -le $pInfo.Total)
 
         if ( $PercentComplete ) {
             $pInfo.PercentComplete = $PercentComplete
@@ -306,10 +359,8 @@ function Write-ProgressEx {
 
         if ( $SecondsRemaining ) {
             $pInfo.SecondsRemaining = $SecondsRemaining
-            $pInfo.stopwatch = $null
         }
         elseif ( $isCalcPossible -and $pInfo.stopwatch  ) {
-            $stopwatch = [System.Diagnostics.Stopwatch]$pInfo.stopwatch
             $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
         }
 
@@ -325,6 +376,18 @@ function Write-ProgressEx {
             $pInfo.CurrentOperation = $CurrentOperation
         }
 
+        if ( $SourceId ) {
+            $pInfo.SourceId = $SourceId
+        }
+
+        if ( $ShowMessages ) {
+            $pInfo.ShowMessages = $ShowMessages
+        }
+
+        if ( $NoProgressBar ) {
+            $pInfo.NoProgressBar = $NoProgressBar
+        }
+
         if ( $Activity ) {
             $pInfo.Activity = $Activity
         }
@@ -332,6 +395,11 @@ function Write-ProgressEx {
         if ( $Completed -or -not $PSBoundParameters.Count  ) {
             $pInfo.Completed = $true
         }
+
+        $pInfo.MessageOnBegin = $MessageOnBegin
+        $pInfo.MessageOnNewActivity = $MessageOnNewActivity
+        $pInfo.MessageOnNewStatus = $MessageOnNewStatus
+        $pInfo.MessageOnEnd = $MessageOnEnd
 
         # Store to global and call standard Write-Progress to display progress
         Set-ProgressEx $pInfo
@@ -350,7 +418,3 @@ function Write-ProgressEx {
         }
     }
 }
-
-Export-ModuleMember `
-    -Cmdlet 'Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx' `
-    -Function 'Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx'

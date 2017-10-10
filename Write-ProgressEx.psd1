@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-10-03
+# mazzy@mazzy.ru, 2017-10-10
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 @{
@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.11'
+ModuleVersion = '0.12'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -25,7 +25,7 @@ CompanyName = 'mazzy'
 Copyright = 'Copyright (c) 2017 Sergey Mazurkin, licensed under Apache 2.0 License.'
 
 # Description of the functionality provided by this module
-Description = 'Native powershell module extended Write-Progress cmdlet'
+Description = 'Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'
@@ -70,7 +70,7 @@ FunctionsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
 CmdletsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
 
 # Variables to export from this module
-# VariablesToExport = @()
+VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = @()
@@ -102,7 +102,7 @@ PrivateData = @{
         IconUri = 'https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Write-ProgressEx extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.'
+        ReleaseNotes = 'Added event messages with #iterations, elapsed time, time of begin, time of end. See Cahngelog.md'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
