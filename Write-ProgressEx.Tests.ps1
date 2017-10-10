@@ -1,7 +1,7 @@
-# mazzy@mazzy.ru, 2017-10-03
+# mazzy@mazzy.ru, 2017-10-10
 # https://github.com/mazzy-ax/Write-progressEx
 
-Import-Module -Force ".\Write-ProgressEx.psm1"
+Import-Module -Force ".\Write-ProgressEx.psd1"
 
 Describe "Write-ProgressEx" {
     $outerLevel = 1..3
@@ -18,9 +18,9 @@ Describe "Write-ProgressEx" {
 
         It "parameters: outer and inner loops" {
             {
-                Write-ProgressEx "outer" -Total $outerLevel.Count
+                Write-ProgressEx "outer" -Total $outerLevel
                 $outerLevel | ForEach-Object {
-                    Write-ProgressEx "inner" -Total $innerLevel.Count -id 1
+                    Write-ProgressEx "inner" -Total $innerLevel -id 1
                     $innerLevel | ForEach-Object {
                         #start-sleep 1
                         Write-ProgressEx -id 1 -increment
@@ -33,8 +33,8 @@ Describe "Write-ProgressEx" {
 
         It "pipes: outer and inner loops" {
             {
-                $outerLevel | Write-ProgressEx "outer" -Total $outerLevel.Count | ForEach-Object {
-                    $innerLevel | Write-ProgressEx "inner" -Total $innerLevel.Count -id 1 | ForEach-Object {
+                $outerLevel | Write-ProgressEx "outer" -Total $outerLevel | ForEach-Object {
+                    $innerLevel | Write-ProgressEx "inner" -Total $innerLevel -id 1 | ForEach-Object {
                         # ...
                     }
                 }
@@ -42,26 +42,29 @@ Describe "Write-ProgressEx" {
         }
 
         It "progress info: splatting" {
-            {
-                Write-ProgressEx "outer" -Total $outerLevel.Count
-                $outerLevel | Write-ProgressEx | ForEach-Object {
-                    $pInfo = Get-ProgressEx
-                    $pInfo.status = 'another status'
-                    Write-ProgressEx @pInfo
-                }
-                Write-ProgressEx -Completed
-            } | Should not throw
+            $pInfo = Get-ProgressEx -Force
+            $pInfo.Activity = 'splating'
+            $pInfo.Status = 'another status'
+            $pInfo.Total = $outerLevel
+
+            { Write-ProgressEx @pInfo } | Should not throw
+
+            Write-ProgressEx
         }
     }
 
     Context "functional" {
+        AfterEach {
+            Write-ProgressEx # complete all
+        }
+
         It "store paramters in module variable" {
-            Write-ProgressEx -Total $outerLevel.Count
+            Write-ProgressEx -Total $outerLevel
             (Get-ProgressEx).Total | Should be $outerLevel.Count
         }
 
         It "increment counter after the increment" {
-            Write-ProgressEx -Total $outerLevel.Count
+            Write-ProgressEx -Total $outerLevel
             (Get-ProgressEx).current | Should be 0
 
             Write-ProgressEx -increment
@@ -69,8 +72,8 @@ Describe "Write-ProgressEx" {
         }
 
         It "autocomplete with pipe" {
-            $outerLevel | Write-ProgressEx "outer" -Total $outerLevel.Count | ForEach-Object {
-                $innerLevel | Write-ProgressEx "inner" -Total $innerLevel.Count -id 1 | ForEach-Object {
+            $outerLevel | Write-ProgressEx "outer" -Total $outerLevel | ForEach-Object {
+                $innerLevel | Write-ProgressEx "inner" -Total $innerLevel -id 1 | ForEach-Object {
                     # ...
                     (Get-ProgressEx -id 0).Total | Should be $outerLevel.Count
                     (Get-ProgressEx -id 1).Total | Should be $innerLevel.Count
@@ -84,8 +87,8 @@ Describe "Write-ProgressEx" {
         }
 
         It "complete children progress when 'previous' id used" {
-            Write-ProgressEx -Total $outerLevel.Count
-            Write-ProgressEx -Total $innerLevel.Count -id 1
+            Write-ProgressEx -Total $outerLevel
+            Write-ProgressEx -Total $innerLevel -id 1
             (Get-ProgressEx -id 0).current | Should be 0
             (Get-ProgressEx -id 1).current | Should be 0
 
@@ -102,8 +105,8 @@ Describe "Write-ProgressEx" {
         }
 
         It "without parameters complete all children progresses" {
-            Write-ProgressEx "outerLevel" -Total $outerLevel.Count
-            Write-ProgressEx "innerLevel" -Total $innerLevel.Count -id 1
+            Write-ProgressEx "outerLevel" -Total $outerLevel
+            Write-ProgressEx "innerLevel" -Total $innerLevel -id 1
 
             (Get-ProgressEx -id 0).Total | Should be $outerLevel.Count
             (Get-ProgressEx -id 1).Total | Should be $innerLevel.Count
@@ -159,7 +162,7 @@ Describe "Get-ProgressEx" {
         }
 
         It "pipe array parameter" {
-            $pInfo = 1,30,40 | Get-ProgressEx
+            $pInfo = 1, 30, 40 | Get-ProgressEx
             $pInfo.Count | Should be 3
             $pInfo[0] | Should be $null
             $pInfo[1] | Should be $null
@@ -167,7 +170,7 @@ Describe "Get-ProgressEx" {
         }
 
         It "pipe array parameter -force" {
-            $pInfo = 1,30,40 | Get-ProgressEx -force
+            $pInfo = 1, 30, 40 | Get-ProgressEx -force
             $pInfo.Count | Should be 3
             $pInfo[0].Id | Should be 1
             $pInfo[1].Id | Should be 30
@@ -188,3 +191,40 @@ Describe "Set-ProgressEx" {
         }
     }
 }
+
+<#
+Describe "Write-ProgressExMesage" {
+
+    Context "work" {
+        $MessageOnBegin = "Begin"
+        Write-ProgressEx -MessageOnBegin $MessageOnBegin
+
+        It "not exported" {
+            get-command Write-ProgressExMessage -Module Write-ProgressEx | Should throw
+        }
+
+        InModuleScope Write-ProgressEx {
+            It "by pInfo" {
+                $pInfo = Get-ProgressEx -id 0
+                Write-ProgressExMessage -pInfo $pInfo -MessageType OnBegin | Should $MessageOnBegin
+            }
+        }
+    }
+}
+
+Describe "Write-ProgressExStd" {
+
+    Context "work" {
+        It "not exported" {
+            { get-command Write-ProgressExStd -Module Write-ProgressEx } | Should throw
+        }
+
+        InModuleScope Write-ProgressEx {
+            It "by pInfo" {
+                $pInfo = Get-ProgressEx -id 0
+                { Write-ProgressExStd -pInfo $pInfo } | Should not throw
+            }
+        }
+    }
+}
+#>

@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-10-03
+# mazzy@mazzy.ru, 2017-10-10
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 @{
@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.11'
+ModuleVersion = '0.12'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -70,7 +70,7 @@ FunctionsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
 CmdletsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
 
 # Variables to export from this module
-# VariablesToExport = @()
+VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = @()

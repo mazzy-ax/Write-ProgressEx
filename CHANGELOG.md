@@ -1,9 +1,36 @@
-
-mazzy@mazzy.ru, 2017-10-03, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-10, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [v0.12] - 2017-10-10
+
+### Main goal
+
+- Provide information about total iterations, elapsed time, start time, end time
+- Provide template functionality to change information messages
+
+### Added
+
+- The ShowMessages switch
+- The in-module cmdlet Write-ProgressExMessage to show event messages
+- Event Messages: onBegin, onNewActivity, onNewStatus, onEnd.
+- The NoProgressBar switch
+- The in-module cmdlet Write-ProgressExStd to call standard cmdlet Write-Progress
+- The Total parameter accept a integer and an array
+
+### Changed
+
+- The Current can be more then Total. It's used to make iterations when Total is not known.
+- The Stopwatch redesigned: stopwatch start with first iterations. The messages uses the stopwatch to display a total elapsed time
+- The module icon
+- Exapmles and Readme
+
+### Removed
+
+- Iterations parameter
+- Export module members in Write-ProgressEx.psm1. Module members exported by psd1-file only
 
 ## [v0.11] - 2017-10-03
 
@@ -60,7 +87,8 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
-[v0.10]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.10...v0.11
+[v0.12]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.11...v0.12
+[v0.11]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.10...v0.11
 [v0.10]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.9...v0.10
 [v0.9]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.8...v0.9
 [v0.8]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.7...v0.8

@@ -1,7 +1,7 @@
-# mazzy@mazzy.ru, 2017-08-25
+# mazzy@mazzy.ru, 2017-10-10
 # https://github.com/mazzy-ax/write-progressEx
 
-Import-Module -Force "..\Write-ProgressEx.psm1"
+Import-Module -Force "..\Write-ProgressEx.psd1"
 
 $range = 1..1000
 
