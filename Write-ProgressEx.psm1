@@ -361,7 +361,7 @@ function Write-ProgressEx {
             $pInfo.SecondsRemaining = $SecondsRemaining
         }
         elseif ( $isCalcPossible -and $pInfo.stopwatch  ) {
-            $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $stopwatch.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
+            $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $pInfo.stopwatch.Elapsed.TotalSeconds * [Math]::Max(0, $pInfo.Total - $pInfo.Current) / $pInfo.Current)
         }
 
         if ( $stopwatch ) {
