@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.12'
+ModuleVersion = '0.12.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
