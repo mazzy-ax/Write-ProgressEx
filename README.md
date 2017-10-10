@@ -14,7 +14,7 @@ The cmdlet:
 
 * works with pipe;
 * works with empty activity string;
-* uses [system.diagnostic.stopwatch] to calculate remaning seconds;
+* uses [system.diagnostic.stopwatch] to calculate remaning seconds and dispaly a total elapsed time;
 * completes all inner progresses if no parameters;
 * automatically completes with pipe;
 * automatically calculates percents;
@@ -22,7 +22,7 @@ The cmdlet:
 * automatically arrange inner loop by id - parentId is optional now;
 * stores totals, current values and actual parameters into the module hashtable;
 * provide get/set cmdlets to access actual parameters;
-* show messages with date, time, iterations and elapsed time on events:
+* display message with date, time, iterations and elapsed time on events:
   * start process;
   * change activity;
   * change status;
