@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Write-ProgressEx</id>
-    <version>0.12</version>
+    <version>0.12.1</version>
     <authors>Sergey Mazurkin</authors>
     <licenseUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/mazzy-ax/Write-ProgressEx</projectUrl>

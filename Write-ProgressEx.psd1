@@ -102,7 +102,7 @@ PrivateData = @{
         IconUri = 'https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Added event messages with #iterations, elapsed time, time of begin, time of end. See Cahngelog.md'
+        ReleaseNotes = 'Added event messages with #iterations, elapsed time, time of begin, time of end. SecondsRemaining fixed. See Cahngelog.md'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

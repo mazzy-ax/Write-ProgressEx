@@ -4,6 +4,11 @@ mazzy@mazzy.ru, 2017-10-10, [https://github.com/mazzy-ax/Write-ProgressEx](https
 
 All notable changes to this project will be documented in this file.
 
+## [v0.12.1] - 2017-10-10
+
+- SecondsRemaining calculation fixed
+- Screenshot with Result text fixed
+
 ## [v0.12] - 2017-10-10
 
 ### Main goal
@@ -87,6 +92,7 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
+[v0.12.1]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.12...v0.12.1
 [v0.12]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.11...v0.12
 [v0.11]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.10...v0.11
 [v0.10]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.9...v0.10

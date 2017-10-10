@@ -1,6 +1,6 @@
 mazzy@mazzy.ru, 2017-10-10, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
-![version](https://img.shields.io/badge/version-0.12-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
+![version](https://img.shields.io/badge/version-0.12.1-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ---
 
@@ -14,15 +14,15 @@ The cmdlet:
 
 * works with pipe;
 * works with empty activity string;
-* uses [system.diagnostic.stopwatch] to calculate remaning seconds;
+* uses [system.diagnostic.stopwatch] to calculate remaning seconds and dispaly a total elapsed time;
 * completes all inner progresses if no parameters;
 * automatically completes with pipe;
 * automatically calculates percents;
-* automatically displays totals on progress bar;
-* automatically arrange inner loop by id - parentId is optional now;
+* automatically displays current iteration and totals on progress bar;
+* automatically set parent id for a inner loop;
 * stores totals, current values and actual parameters into the module hashtable;
 * provide get/set cmdlets to access actual parameters;
-* show messages with date, time, iterations and elapsed time on events:
+* display message with date, time, iterations and elapsed time on events:
   * start process;
   * change activity;
   * change status;
