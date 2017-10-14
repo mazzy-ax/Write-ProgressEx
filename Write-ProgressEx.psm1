@@ -1,9 +1,17 @@
-# mazzy@mazzy.ru, 2017-10-10
+# mazzy@mazzy.ru, 2017-10-14
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #requires -version 3.0
 
 $ProgressEx = @{}
+
+$ProgressExDefault = @{
+    MessageOnBegin       = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
+    MessageOnNewActivity = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnNewStatus   = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnEnd         = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"}
+}
+
 $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
 
 function Get-ProgressEx {
@@ -74,23 +82,49 @@ function Write-ProgressExMessage {
     .NOTES
     This function is not exported
     #>
-    [cmdletbinding()]
+    [cmdletbinding(DefaultParameterSetName = 'Message')]
     param(
         [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [hashtable]$pInfo,
 
-        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
-        [string]$Message
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Message')]
+        [scriptblock]$Message,
+
+        [Parameter(ParameterSetName = 'OnBegin')]
+        [switch]$ShowMessagesOnBegin,
+
+        [Parameter(ParameterSetName = 'OnNewActivity')]
+        [switch]$ShowMessagesOnNewActivity,
+
+        [Parameter(ParameterSetName = 'OnNewStatus')]
+        [switch]$ShowMessagesOnNewStatus,
+
+        [Parameter(ParameterSetName = 'OnEnd')]
+        [switch]$ShowMessagesOnEnd
     )
 
     process {
-        if ( $pInfo.ShowMessages -and $Message ) {
-            # message may use all variable values in all scope
-            $Message = Invoke-Expression $Message -ErrorAction SilentlyContinue
+        function nz ($a, $b) {
+            if ($a) { $a } else { $b }
+        }
 
-            if ( $Message ) {
-                Write-Host $Message
-            }
+        if ( $ShowMessagesOnBegin -and $pInfo.ShowMessagesOnBegin ) {
+            $Message = nz $pInfo.MessageOnBegin $ProgressExDefault.MessageOnBegin
+        }
+        elseif ( $ShowMessagesOnNewActivity -and $pInfo.ShowMessagesOnNewActivity ) {
+            $Message = nz $pInfo.MessageOnNewActivity $ProgressExDefault.MessageOnNewActivity
+        }
+        elseif ( $ShowMessagesOnNewStatus -and $pInfo.ShowMessagesOnNewStatus ) {
+            $Message = nz $pInfo.MessageOnNewStatus $ProgressExDefault.MessageOnNewStatus
+        }
+        elseif ( $ShowMessagesOnEnd -and $pInfo.ShowMessagesOnEnd ) {
+            $Message = nz $pInfo.MessageOnEnd $ProgressExDefault.MessageOnEnd
+        }
+
+        # message may use all variable values in all scope
+        if ( $Message ) {
+            $obj = Invoke-Command -ScriptBlock $Message -ArgumentList $pInfo -ErrorAction SilentlyContinue
+            Write-Warning $obj
         }
     }
 }
@@ -135,7 +169,6 @@ function Write-ProgressExStd {
     }
 }
 
-
 function Set-ProgressEx {
     <#
     .SYNOPSIS
@@ -177,7 +210,7 @@ function Set-ProgressEx {
 
                     $ProgressEx[$_].Completed = $true
 
-                    Write-ProgressExMessage $ProgressEx[$_] $ProgressEx[$_].MessageOnEnd
+                    Write-ProgressExMessage $ProgressEx[$_] -ShowMessagesOnEnd
                     Write-ProgressExStd $ProgressEx[$_]
 
                     $ProgressEx[$_].Stopwatch = $null
@@ -194,29 +227,31 @@ function Set-ProgressEx {
         }
 
         if ( $pInfo ) {
-
-            # events & messages
-            if ( -not $ProgressEx[$pInfo.Id].Stopwatch ) {
-                if( -not $pInfo.Stopwatch ) {
-                    $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-                }
-                Write-ProgressExMessage $pInfo $pInfo.MessageOnBegin
+            # adjust pInfo.Total for messages
+            if ( $pInfo.Current -gt $pInfo.Total ) {
+                $pInfo.Total = $pInfo.Current
             }
-            elseif ( $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity ) {
-                Write-ProgressExMessage $pInfo $pInfo.MessageOnNewActivity
-            }
-            elseif ( $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status ) {
-                Write-ProgressExMessage $pInfo $pInfo.MessageOnNewStatus
-            }
-
-            $ProgressEx[$pInfo.Id] = $pInfo
 
             if ( -not $pInfo.Completed ) {
+                # events & messages
+                if ( -not $ProgressEx[$pInfo.Id].Stopwatch ) {
+                    if ( -not $pInfo.Stopwatch ) {
+                        $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+                    }
+                    Write-ProgressExMessage $pInfo -ShowMessagesOnBegin
+                }
+                elseif ( $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity ) {
+                    Write-ProgressExMessage $pInfo -ShowMessagesOnNewActivity
+                }
+                elseif ( $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status ) {
+                    Write-ProgressExMessage $pInfo -ShowMessagesOnNewStatus
+                }
+
                 Write-ProgressExStd $pInfo
             }
 
+            $ProgressEx[$pInfo.Id] = $pInfo
             Complete-ProgressAndChilren $pInfo.id -CompleteNow $pInfo.Completed
-
         }
     }
 }
@@ -232,9 +267,9 @@ function Write-ProgressEx {
         Write-ProgressEx -Total $names.Count -id 1
         $names | Where-Object ...... | ForEach-Object {
             ......
-            Write-ProgressEx -id 1 -increment
+            Write-ProgressEx -id 1 -Increment
         }
-        Write-ProgressEx -increment
+        Write-ProgressEx -Increment
     }
     write-posProgress -complete
 
@@ -289,26 +324,31 @@ function Write-ProgressEx {
 
         # Extended parameters
         [Parameter(ValueFromPipeline = $true)]
-        [object]$inputObject,
+        [object]$InputObject,
 
-        $total, # total iterations. [int] or [object[]]
         [ValidateRange(0, [int]::MaxValue)]
-        [int]$current, # current iteration number. It may be greather then $total.
+        [int]$Total,
+        [ValidateRange(0, [int]::MaxValue)]
+        [int]$Current, # current iteration number. It may be greather then $total.
 
-        [switch]$increment,
-        [System.Diagnostics.Stopwatch]$stopwatch,
+        [switch]$Increment,
+        [System.Diagnostics.Stopwatch]$Stopwatch,
 
         # The Сmdlet does not call a standard write-progress cmdlet. Thus the progress bar does not show.
         [switch]$NoProgressBar,
 
+        # Message templates
+        [scriptblock]$MessageOnBegin,
+        [scriptblock]$MessageOnNewActivity,
+        [scriptblock]$MessageOnNewStatus,
+        [scriptblock]$MessageOnEnd,
+
         # The cmdlet output no messages
         [switch]$ShowMessages,
-
-        # Message templates
-        [string]$MessageOnBegin = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."',
-        [string]$MessageOnNewActivity = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"',
-        [string]$MessageOnNewStatus = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"',
-        [string]$MessageOnEnd = '"[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"'
+        [switch]$ShowMessagesOnBegin = $ShowMessages -or $MessageOnBegin,
+        [switch]$ShowMessagesOnNewActivity = $ShowMessages -or $MessageOnNewActivity,
+        [switch]$ShowMessagesOnNewStatus = $ShowMessages -or $MessageOnNewStatus,
+        [switch]$ShowMessagesOnEnd = $ShowMessages -or $MessageOnEnd
     )
 
     process {
@@ -318,13 +358,12 @@ function Write-ProgressEx {
             $pInfo.ParentId = $ParentId
         }
 
+        if ( $stopwatch ) {
+            $pInfo.stopwatch = $stopwatch
+        }
+
         if ( $total ) {
-            if ( $total -is [object[]] ) {
-                $pInfo.Total = $total.Count
-            }
-            else {
-                $pInfo.Total = $total
-            }
+            $pInfo.Total = $total
 
             if ( -not $Increment -and -not $inputObject ) {
                 $pInfo.PercentComplete = 0
@@ -364,8 +403,12 @@ function Write-ProgressEx {
             $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $pInfo.stopwatch.Elapsed.TotalSeconds * [Math]::Max(0, $pInfo.Total - $pInfo.Current) / $pInfo.Current)
         }
 
-        if ( $stopwatch ) {
-            $pInfo.stopwatch = $stopwatch
+        if ( $Completed -or -not $PSBoundParameters.Count  ) {
+            $pInfo.Completed = $true
+        }
+
+        if ( $Activity ) {
+            $pInfo.Activity = $Activity
         }
 
         if ( $Status ) {
@@ -380,26 +423,41 @@ function Write-ProgressEx {
             $pInfo.SourceId = $SourceId
         }
 
-        if ( $ShowMessages ) {
-            $pInfo.ShowMessages = $ShowMessages
-        }
-
         if ( $NoProgressBar ) {
             $pInfo.NoProgressBar = $NoProgressBar
         }
 
-        if ( $Activity ) {
-            $pInfo.Activity = $Activity
+        if ( $ShowMessagesOnBegin ) {
+            $pInfo.ShowMessagesOnBegin = $ShowMessagesOnBegin
         }
 
-        if ( $Completed -or -not $PSBoundParameters.Count  ) {
-            $pInfo.Completed = $true
+        if ( $ShowMessagesOnNewActivity ) {
+            $pInfo.ShowMessagesOnNewActivity = $ShowMessagesOnNewActivity
         }
 
-        $pInfo.MessageOnBegin = $MessageOnBegin
-        $pInfo.MessageOnNewActivity = $MessageOnNewActivity
-        $pInfo.MessageOnNewStatus = $MessageOnNewStatus
-        $pInfo.MessageOnEnd = $MessageOnEnd
+        if ( $ShowMessagesOnNewStatus ) {
+            $pInfo.ShowMessagesOnNewStatus = $ShowMessagesOnNewStatus
+        }
+
+        if ( $ShowMessagesOnEnd ) {
+            $pInfo.ShowMessagesOnEnd = $ShowMessagesOnEnd
+        }
+
+        if ( $MessageOnBegin ) {
+            $pInfo.MessageOnBegin = $MessageOnBegin
+        }
+
+        if ( $MessageOnNewActivity ) {
+            $pInfo.MessageOnNewActivity = $MessageOnNewActivity
+        }
+
+        if ( $MessageOnNewStatus ) {
+            $pInfo.MessageOnNewStatus = $MessageOnNewStatus
+        }
+
+        if ( $MessageOnEnd ) {
+            $pInfo.MessageOnEnd = $MessageOnEnd
+        }
 
         # Store to global and call standard Write-Progress to display progress
         Set-ProgressEx $pInfo

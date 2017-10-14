@@ -1,4 +1,4 @@
-mazzy@mazzy.ru, 2017-08-25, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-14, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Examples
 
@@ -19,3 +19,7 @@ mazzy@mazzy.ru, 2017-08-25, [https://github.com/mazzy-ax/Write-ProgressEx](https
 ![screenshot: Write-ProgressEx. Multi](../Media/examples.multi-1.png)
 
 ![screenshot: Write-ProgressEx. Multi](../Media/examples.multi-2.png)
+
+## [Write-ProgressEx.counter.ps1](/Write-ProgressEx.counter.ps1)
+
+![screenshot: Write-ProgressEx. Counter](../Media/examples.counter.png)

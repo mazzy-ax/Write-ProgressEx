@@ -1,13 +1,16 @@
-# mazzy@mazzy.ru, 2017-10-10
+# mazzy@mazzy.ru, 2017-10-14
 # https://github.com/mazzy-ax/Write-progressEx
 
-Import-Module -Force ".\Write-ProgressEx.psd1"
+$me = Split-Path -Leaf $PSCommandPath
+$path = Split-Path -Parent $PSCommandPath
+$module = Join-Path $path "Write-ProgressEx.psd1"
+Import-Module -Force $module
 
-Describe "Write-ProgressEx" {
+Describe "Write-ProgressEx" -Tag "Run", "UnitTest", "UT" {
     $outerLevel = 1..3
     $innerLevel = 1..2
 
-    Context "Example" {
+    Context "Work" {
         It "work" {
             { Write-ProgressEx } | Should not throw
         }
@@ -18,9 +21,9 @@ Describe "Write-ProgressEx" {
 
         It "parameters: outer and inner loops" {
             {
-                Write-ProgressEx "outer" -Total $outerLevel
+                Write-ProgressEx "outer" -Total $outerLevel.Count
                 $outerLevel | ForEach-Object {
-                    Write-ProgressEx "inner" -Total $innerLevel -id 1
+                    Write-ProgressEx "inner" -Total $innerLevel.Count -id 1
                     $innerLevel | ForEach-Object {
                         #start-sleep 1
                         Write-ProgressEx -id 1 -increment
@@ -33,8 +36,8 @@ Describe "Write-ProgressEx" {
 
         It "pipes: outer and inner loops" {
             {
-                $outerLevel | Write-ProgressEx "outer" -Total $outerLevel | ForEach-Object {
-                    $innerLevel | Write-ProgressEx "inner" -Total $innerLevel -id 1 | ForEach-Object {
+                $outerLevel | Write-ProgressEx "outer" -Total $outerLevel.Count | ForEach-Object {
+                    $innerLevel | Write-ProgressEx "inner" -Total $innerLevel.Count -id 1 | ForEach-Object {
                         # ...
                     }
                 }
@@ -45,7 +48,7 @@ Describe "Write-ProgressEx" {
             $pInfo = Get-ProgressEx -Force
             $pInfo.Activity = 'splating'
             $pInfo.Status = 'another status'
-            $pInfo.Total = $outerLevel
+            $pInfo.Total = $outerLevel.Count
 
             { Write-ProgressEx @pInfo } | Should not throw
 
@@ -53,18 +56,18 @@ Describe "Write-ProgressEx" {
         }
     }
 
-    Context "functional" {
+    Context "Functional" {
         AfterEach {
             Write-ProgressEx # complete all
         }
 
         It "store paramters in module variable" {
-            Write-ProgressEx -Total $outerLevel
+            Write-ProgressEx -Total $outerLevel.Count
             (Get-ProgressEx).Total | Should be $outerLevel.Count
         }
 
         It "increment counter after the increment" {
-            Write-ProgressEx -Total $outerLevel
+            Write-ProgressEx -Total $outerLevel.Count
             (Get-ProgressEx).current | Should be 0
 
             Write-ProgressEx -increment
@@ -72,8 +75,8 @@ Describe "Write-ProgressEx" {
         }
 
         It "autocomplete with pipe" {
-            $outerLevel | Write-ProgressEx "outer" -Total $outerLevel | ForEach-Object {
-                $innerLevel | Write-ProgressEx "inner" -Total $innerLevel -id 1 | ForEach-Object {
+            $outerLevel | Write-ProgressEx "outer" -Total $outerLevel.Count | ForEach-Object {
+                $innerLevel | Write-ProgressEx "inner" -Total $innerLevel.Count -id 1 | ForEach-Object {
                     # ...
                     (Get-ProgressEx -id 0).Total | Should be $outerLevel.Count
                     (Get-ProgressEx -id 1).Total | Should be $innerLevel.Count
@@ -87,8 +90,8 @@ Describe "Write-ProgressEx" {
         }
 
         It "complete children progress when 'previous' id used" {
-            Write-ProgressEx -Total $outerLevel
-            Write-ProgressEx -Total $innerLevel -id 1
+            Write-ProgressEx -Total $outerLevel.Count
+            Write-ProgressEx -Total $innerLevel.Count -id 1
             (Get-ProgressEx -id 0).current | Should be 0
             (Get-ProgressEx -id 1).current | Should be 0
 
@@ -105,8 +108,8 @@ Describe "Write-ProgressEx" {
         }
 
         It "without parameters complete all children progresses" {
-            Write-ProgressEx "outerLevel" -Total $outerLevel
-            Write-ProgressEx "innerLevel" -Total $innerLevel -id 1
+            Write-ProgressEx "outerLevel" -Total $outerLevel.Count
+            Write-ProgressEx "innerLevel" -Total $innerLevel.Count -id 1
 
             (Get-ProgressEx -id 0).Total | Should be $outerLevel.Count
             (Get-ProgressEx -id 1).Total | Should be $innerLevel.Count
@@ -193,25 +196,57 @@ Describe "Set-ProgressEx" {
 }
 
 <#
+#remove-module 'Write-ProgressEx'
+
 Describe "Write-ProgressExMesage" {
 
-    Context "work" {
-        $MessageOnBegin = "Begin"
-        Write-ProgressEx -MessageOnBegin $MessageOnBegin
+    InModuleScope {
+        Context "work" {
+            $Message = {"Test"}
+            $pInfo = @{
+                id                       = 1
+                ShowMessageOnBegin       = $true
+                ShowMessageOnNewActivity = $true
+                ShowMessageOnNewStatus   = $true
+                ShowMessageOnEnd         = $true
+                MessageOnBegin           = {"$($pInfo.id):onBegin"}
+                MessageOnNewActivity     = {"$($pInfo.id):onNewActivity"}
+                MessageOnNewStatus       = {"$($pInfo.id):onNewStatus"}
+                MessageOnEnd             = {"$($pInfo.id):onEnd"}
+            }
+            $Expected = @{
+                Message              = Invoke-Command $Message
+                MessageOnBegin       = Invoke-Command $pInfo.MessageOnBegin
+                MessageOnNewActivity = Invoke-Command $pInfo.MessageOnNewActivity
+                MessageOnNewStatus   = Invoke-Command $pInfo.MessageOnNewStatus
+                MessageOnEnd         = Invoke-Command $pInfo.MessageOnEnd
+            }
 
-        It "not exported" {
-            get-command Write-ProgressExMessage -Module Write-ProgressEx | Should throw
-        }
+            It "message" {
+                Write-ProgressExMessage $pInfo -Message $Message | Should be $Expected.Message
+            }
 
-        InModuleScope Write-ProgressEx {
-            It "by pInfo" {
-                $pInfo = Get-ProgressEx -id 0
-                Write-ProgressExMessage -pInfo $pInfo -MessageType OnBegin | Should $MessageOnBegin
+            It "onBegin" {
+                Write-ProgressExMessage $pInfo -ShowMessagesOnBegin | Should be $Expected.MessageOnBegin
+            }
+
+            It "onNewActivity" {
+                Write-ProgressExMessage $pInfo -ShowMessagesOnNewActivity | Should be $Expected.MessageOnNewActivity
+            }
+
+            It "onNewStatus" {
+                Write-ProgressExMessage $pInfo -ShowMessagesOnNewStatus | Should be $Expected.MessageOnNewStatus
+            }
+
+            It "onEnd" {
+                Write-ProgressExMessage $pInfo -ShowMessagesOnEnd | Should be $Expected.MessageOnEnd
             }
         }
     }
 }
+#>
 
+<#
 Describe "Write-ProgressExStd" {
 
     Context "work" {
@@ -228,3 +263,7 @@ Describe "Write-ProgressExStd" {
     }
 }
 #>
+
+
+
+

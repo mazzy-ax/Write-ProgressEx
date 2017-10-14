@@ -1,6 +1,6 @@
-mazzy@mazzy.ru, 2017-10-10, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-14, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
-![version](https://img.shields.io/badge/version-0.12.1-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
+![version](https://img.shields.io/badge/version-0.13-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ---
 
@@ -21,13 +21,14 @@ The cmdlet:
 * automatically displays current iteration and totals on progress bar;
 * automatically set parent id for a inner loop;
 * stores totals, current values and actual parameters into the module hashtable;
-* provide get/set cmdlets to access actual parameters;
-* display message with date, time, iterations and elapsed time on events:
+* provides get/set cmdlets to access actual parameters;
+* show console messages with date, time, iterations and elapsed time on events:
   * start process;
   * change activity;
   * change status;
   * end process.
-* provide modify message templates.
+* allows to modify message templates;
+* provide counter functional. See [Write-ProgressEx as a counter](Examples/Write-ProgressEx.counter.ps1).
 
 Note 1: the cmdlet is not safe with multi-thread.
 
@@ -35,14 +36,14 @@ Note 1: the cmdlet is not safe with multi-thread.
 
 ```powershell
 $range1 = 1..20
-$range1 | Write-ProgressEx "loop 1" -Total $range1 -Increment -ShowMessages | ForEach-Object {
+$range1 | Write-ProgressEx "loop 1" -Total $range1.Count -ShowMessages | ForEach-Object {
     # ....
 }
 
 $range2 = 1..15
 $range2 | ForEach-Object {
     # ....
-    Write-ProgressEx "loop 2" -Total $range2 -Increment
+    Write-ProgressEx "loop 2" -Total $range2.Count -Increment
 }
 
 Write-ProgressEx #close all progress bars
@@ -54,8 +55,8 @@ Sample with pipe and nested loops:
 $outer = 1..20
 $inner = 1..50
 
-$outer | Write-ProgressEx "pipe nodes" -Status "outer" -Total $outer -ShowMessages | ForEach-Object {
-    $inner | Write-ProgressEx "pipe names" -id 1 -Status "inner" -Total $inner | ForEach-Object {
+$outer | Write-ProgressEx "pipe nodes" -Status "outer" -Total $outer.Count -ShowMessages | ForEach-Object {
+    $inner | Write-ProgressEx "pipe names" -id 1 -Status "inner" -Total $inner.Count | ForEach-Object {
         # ....
     }
 }

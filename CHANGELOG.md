@@ -1,8 +1,23 @@
-mazzy@mazzy.ru, 2017-10-10, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-14, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [v0.13] - 2017-10-14
+
+### Added
+
+- Example 'counter' demonstrate how to use [Write-ProgressEx cmdlet as counter](Examples/Write-ProgressEx.counter.ps1).
+- Tests with tag build added. It need to run and test exapmles.
+
+### Changed
+
+- Message templates are scriptblock now
+- Cmdlet show warning messages instead write to a host
+- The total grow if the current pass over the total
+- The total parameter is integer only. Yes, again. Sorry, a runtime checking is not comfortable for XML, files and other iterable ranges
+- chocolateyInstall.ps1 moved to the [Tools](Tools/) directory
 
 ## [v0.12.1] - 2017-10-10
 
@@ -92,6 +107,7 @@ All notable changes to this project will be documented in this file.
 
 - $Global:ProgressExInfo
 
+[v0.13]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.12...v0.13
 [v0.12.1]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.12...v0.12.1
 [v0.12]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.11...v0.12
 [v0.11]: https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.10...v0.11
