@@ -1,10 +1,13 @@
-# mazzy@mazzy.ru, 2017-10-14
+# mazzy@mazzy.ru, 2017-10-21
 # https://github.com/mazzy-ax/write-progressEx
 
-$me = Split-Path -Leaf $PSCommandPath
-$path = Split-Path -Parent $PSCommandPath
-$module = Join-Path (Split-Path -Parent $path) "Write-ProgressEx.psd1"
+#requires -version 3.0
+
+$me = $PSCommandPath | Split-Path -Leaf
+$path = $PSCommandPath | Split-Path -Parent
+$module = $path | Split-Path -Parent | Join-Path -ChildPath "Write-ProgressEx.psd1"
 Import-Module -Force $module
+
 
 $range = 1..1000
 

@@ -1,8 +1,14 @@
-mazzy@mazzy.ru, 2017-10-14, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-21, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [v0.14](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.13...v0.14) - 2017-10-21
+
+- The autoname functionality added: If user does not specify an Activity parameter, the Write-ProgressEx display the caller function name or the caller script file name as the Activity.
+- A pipe with empty arg list fixed
+- Events renamed
 
 ## [v0.13] - 2017-10-14
 

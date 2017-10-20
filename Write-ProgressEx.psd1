@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-10-14
+# mazzy@mazzy.ru, 2017-10-21
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 @{
@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.13'
+ModuleVersion = '0.14'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -102,7 +102,7 @@ PrivateData = @{
         IconUri = 'https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Added event messages with #iterations, elapsed time, time of begin, time of end. It is scriptblocks now. The counter example added. See Cahngelog.md'
+        ReleaseNotes = 'The autoname functionality added. Messege events renamed. See Cahngelog.md'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

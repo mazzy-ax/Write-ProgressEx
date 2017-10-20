@@ -1,12 +1,12 @@
-# mazzy@mazzy.ru, 2017-10-14
+# mazzy@mazzy.ru, 2017-10-21
 # https://github.com/mazzy-ax/Write-progressEx
 
-$me = Split-Path -Leaf $PSCommandPath
-$path = Split-Path -Parent $PSCommandPath
+$me = $PSCommandPath | Split-Path -Leaf
+$path = $PSCommandPath | Split-Path -Parent
 
 Describe "Write-ProgressEx Exapmles" -Tag "build", "exapmle" {
 
-    Get-ChildItem (Join-Path $path Write-ProgressEx.*.ps1) -Exclude $me | ForEach-Object {
+    $path | Join-Path -ChildPath Write-ProgressEx.*.ps1 | Get-ChildItem -Exclude $me | ForEach-Object {
         Write-Verbose $_.Name
         It $_.Name {
             { . $_ | Out-Null } | Should not throw

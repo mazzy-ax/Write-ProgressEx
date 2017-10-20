@@ -9,11 +9,14 @@ $module = $path | Split-Path -Parent | Join-Path -ChildPath "Write-ProgressEx.ps
 Import-Module -Force $module
 
 
-$nodes = 1..20
-$names = 1..50
+1..500 | write-ProgressEx | ForEach-Object {
+    # The progress name is equal to the script file name
+}
 
-$nodes | Where-Object {$true} | write-ProgressEx "pipe nodes" -Total $nodes.Count -Status "outer" -ShowMessages | ForEach-Object {
-    $names | Where-Object {$true} | write-ProgressEx "pipe names" -Total $names.Count -id 1 -Status "inner" | ForEach-Object {
-        #...
+function test-range {
+    1..500 | write-ProgressEx | ForEach-Object {
+        # The progress name is equal to the function name
     }
 }
+
+test-range
