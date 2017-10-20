@@ -35,6 +35,8 @@ Note 1: the cmdlet is not safe with multi-thread.
 
 # Examples
 
+A pipe and a simple loop:
+
 ```powershell
 $range1 = 1..20
 $range1 | Write-ProgressEx "loop 1" -Total $range1.Count -ShowMessages | ForEach-Object {
@@ -50,7 +52,7 @@ $range2 | ForEach-Object {
 Write-ProgressEx #close all progress bars
 ```
 
-Sample with pipe and nested loops:
+Pipes in nested loops:
 
 ```powershell
 $outer = 1..20

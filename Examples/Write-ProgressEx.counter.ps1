@@ -3,10 +3,8 @@
 
 #requires -version 3.0
 
-$me = $PSCommandPath | Split-Path -Leaf
-$path = $PSCommandPath | Split-Path -Parent
-$module = $path | Split-Path -Parent | Join-Path -ChildPath "Write-ProgressEx.psd1"
-Import-Module -Force $module
+$module = "Write-ProgressEx.psd1"
+$PSCommandPath | Split-Path -Parent | Split-Path -Parent | Join-Path -ChildPath $module | Import-Module -Force
 
 $path | Join-Path -ChildPath Write-ProgressEx.*.ps1 | Get-ChildItem | write-ProgressEx -id 0 "files in Exapmle directory" -ShowMessagesOnCompleted -NoProgressBar | ForEach-Object {
     # ....
