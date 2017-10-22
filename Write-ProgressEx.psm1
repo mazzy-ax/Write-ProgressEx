@@ -3,16 +3,20 @@
 
 #requires -version 3.0
 
+#region Module Variables
+
 $ProgressEx = @{}
 
 $ProgressExDefault = @{
-    MessageOnFirstIteration = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
-    MessageOnNewActivity    = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnNewStatus      = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnCompleted      = {param([hashtable]$pInfo) "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"}
+    MessageOnFirstIteration = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
+    MessageOnNewActivity    = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnNewStatus      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnCompleted      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"}
 }
 
 $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
+
+#endregion Module Variables
 
 function Get-ProgressEx {
     <#
@@ -123,8 +127,7 @@ function Write-ProgressExMessage {
 
         # message may use all variable values in all scope
         if ( $Message ) {
-            $obj = Invoke-Command -ScriptBlock $Message -ArgumentList $pInfo -ErrorAction SilentlyContinue
-            Write-Warning $obj
+            Invoke-Command -ScriptBlock $Message -ArgumentList $pInfo -ErrorAction SilentlyContinue
         }
     }
 }
