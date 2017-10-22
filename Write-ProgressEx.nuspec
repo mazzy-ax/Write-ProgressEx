@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Write-ProgressEx</id>
-    <version>0.14</version>
+    <version>0.14.1</version>
     <authors>Sergey Mazurkin</authors>
     <licenseUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/mazzy-ax/Write-ProgressEx</projectUrl>
     <iconUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.</description>
-    <releaseNotes>The autoname functionality added. Messege events renamed. See Cahngelog.md</releaseNotes>
+    <releaseNotes>Counter example fixed. The autoname functionality added. Messege events renamed. See Cahngelog.md</releaseNotes>
     <tags>Progress ProgressBar Write-Progress</tags>
   </metadata>
   <files>
