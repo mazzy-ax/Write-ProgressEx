@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-10-22
+# mazzy@mazzy.ru, 2017-10-21
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 @{
@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.14.1'
+ModuleVersion = '0.14'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
