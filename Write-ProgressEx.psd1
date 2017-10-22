@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.14.1'
+ModuleVersion = '0.15'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -102,7 +102,19 @@ PrivateData = @{
         IconUri = 'https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Counter example fixed. The autoname functionality added. Messege events renamed. See Cahngelog.md'
+        ReleaseNotes = @'
+v0.15
+
+* Message scriptblocks should display message instead return message string
+* The region block for module variables added
+
+v0.14
+
+* The autoname functionality added.
+* Messege events renamed.
+
+See CHANGELOG.md
+'@
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

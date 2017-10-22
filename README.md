@@ -1,6 +1,6 @@
-mazzy@mazzy.ru, 2017-10-21, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-22, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
-![version](https://img.shields.io/badge/version-0.14-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
+![version](https://img.shields.io/badge/version-0.15-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ---
 
@@ -22,12 +22,12 @@ The cmdlet:
 * automatically set parent id for a inner loop;
 * stores totals, current values and actual parameters into the module hashtable;
 * provides get/set cmdlets to access actual parameters;
-* show console messages with date, time, iterations and elapsed time on events:
+* show messages with date, time, iterations and elapsed time on events:
   * first iteration;
-  * change activity;
-  * change status;
-  * complete.
-* allows to modify message templates;
+  * activity changed;
+  * status changed;
+  * completed.
+* uses script blocks to show messages;
 * provide counter functional. See [Write-ProgressEx as a counter](Examples/Write-ProgressEx.counter.ps1);
 * use the caller function name or the caller script file name as the Activity.
 
