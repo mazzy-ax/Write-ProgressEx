@@ -1,8 +1,13 @@
-mazzy@mazzy.ru, 2017-10-22, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-10-27, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [v0.16](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.15...v0.16) - 2017-10-27
+
+* The cmdlet uses an array of scriptblocks for each event instead a scriptblock
+* NoProgressBar error fixed
 
 ## [v0.15](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.14...v0.15) - 2017-10-22
 

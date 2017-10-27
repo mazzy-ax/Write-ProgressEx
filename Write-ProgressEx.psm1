@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-10-22
+# mazzy@mazzy.ru, 2017-10-27
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #requires -version 3.0
@@ -8,10 +8,10 @@
 $ProgressEx = @{}
 
 $ProgressExDefault = @{
-    MessageOnFirstIteration = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
-    MessageOnNewActivity    = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnNewStatus      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnCompleted      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date )] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"}
+    MessageOnFirstIteration = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
+    MessageOnNewActivity    = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnNewStatus      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnCompleted      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"}
 }
 
 $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
@@ -92,7 +92,7 @@ function Write-ProgressExMessage {
         [hashtable]$pInfo,
 
         [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Message')]
-        [scriptblock]$Message,
+        [scriptblock[]]$Message,
 
         [Parameter(ParameterSetName = 'OnFirstIteration')]
         [switch]$ShowMessagesOnFirstIteration,
@@ -126,8 +126,8 @@ function Write-ProgressExMessage {
         }
 
         # message may use all variable values in all scope
-        if ( $Message ) {
-            Invoke-Command -ScriptBlock $Message -ArgumentList $pInfo -ErrorAction SilentlyContinue
+        $Message | Where-Object { $_ } | ForEach-Object {
+            Invoke-Command -ScriptBlock $_ -ArgumentList $pInfo -ErrorAction SilentlyContinue
         }
     }
 }
@@ -150,7 +150,7 @@ function Write-ProgressExStd {
     )
 
     process {
-        if ( -not $pInfo.NoShowProgressBar -and $pInfo ) {
+        if ( -not $pInfo.NoProgressBar -and $pInfo ) {
             # Invoke standard write-progress cmdlet
             $pArgs = @{}
             $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
@@ -336,10 +336,10 @@ function Write-ProgressEx {
         [switch]$NoProgressBar,
 
         # Message templates
-        [scriptblock]$MessageOnFirstIteration,
-        [scriptblock]$MessageOnNewActivity,
-        [scriptblock]$MessageOnNewStatus,
-        [scriptblock]$MessageOnCompleted,
+        [scriptblock[]]$MessageOnFirstIteration,
+        [scriptblock[]]$MessageOnNewActivity,
+        [scriptblock[]]$MessageOnNewStatus,
+        [scriptblock[]]$MessageOnCompleted,
 
         # The cmdlet output no messages
         [switch]$ShowMessages,

@@ -1,4 +1,4 @@
-# mazzy@mazzy.ru, 2017-10-22
+# mazzy@mazzy.ru, 2017-10-27
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 @{
@@ -7,7 +7,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.15'
+ModuleVersion = '0.16'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -103,15 +103,15 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = @'
+v0.16
+
+* The cmdlet uses an array of scriptblocks for each event instead a scriptblock
+* NoProgressBar error fixed
+
 v0.15
 
 * Message scriptblocks should display message instead return message string
 * The region block for module variables added
-
-v0.14
-
-* The autoname functionality added.
-* Messege events renamed.
 
 See CHANGELOG.md
 '@
