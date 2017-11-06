@@ -1,6 +1,6 @@
-mazzy@mazzy.ru, 2017-10-27, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
+mazzy@mazzy.ru, 2017-11-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
 
-![version](https://img.shields.io/badge/version-0.16-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg)
+![version](https://img.shields.io/badge/version-0.17-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg) [![Powershell Gallery](https://img.shields.io/badge/Powershell-Gallery-blue.svg)](https://www.powershellgallery.com/packages/write-ProgressEx)
 
 ---
 

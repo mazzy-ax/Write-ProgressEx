@@ -2,23 +2,20 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Write-ProgressEx</id>
-    <version>0.16</version>
+    <version>0.17</version>
     <authors>Sergey Mazurkin</authors>
     <licenseUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/mazzy-ax/Write-ProgressEx</projectUrl>
     <iconUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.</description>
+    <description>
+Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.
+    </description>
     <releaseNotes>
 v0.16
 
 * The cmdlet uses an array of scriptblocks for each event instead a scriptblock
 * NoProgressBar error fixed
-
-v0.15
-
-* Message scriptblocks should display message instead return message string
-* The region block for module variables added
 
 See CHANGELOG.md
     </releaseNotes>

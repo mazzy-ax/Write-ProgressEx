@@ -1,7 +1,8 @@
-# mazzy@mazzy.ru, 2017-10-27
+# mazzy@mazzy.ru, 2017-11-06
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #requires -version 3.0
+Set-StrictMode -Version 1.0
 
 #region Module variables
 
@@ -132,46 +133,6 @@ function Write-ProgressExMessage {
     }
 }
 
-function Write-ProgressExStd {
-    <#
-    .SYNOPSIS
-    Show standard Progress bar by $id or $pInfo
-
-    .PARAMETER pInfo
-    The progress info returned by Get-ProgressEx
-
-    .NOTES
-    This function is not exported
-    #>
-    [cmdletbinding()]
-    param(
-        [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [hashtable]$pInfo
-    )
-
-    process {
-        if ( -not $pInfo.NoProgressBar -and $pInfo ) {
-            # Invoke standard write-progress cmdlet
-            $pArgs = @{}
-            $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
-
-            if ( $pInfo.Total ) {
-                $pArgs.Activity = ($pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': ')
-            }
-            elseif ($pInfo.Current) {
-                $pArgs.Activity = ($pArgs.Activity, $pInfo.Current -join ': ')
-            }
-
-            # Activity is mandatory parameter for standard Write-Progress
-            if ( -not $pArgs.Activity ) {
-                $pArgs.Activity = '.'
-            }
-
-            Write-Progress @pArgs
-        }
-    }
-}
-
 function Set-ProgressEx {
     <#
     .SYNOPSIS
@@ -202,55 +163,57 @@ function Set-ProgressEx {
     [cmdletbinding()]
     param(
         [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [hashtable]$pInfo
+        [hashtable]$pInfo,
+
+        [switch]$Completed
     )
 
     process {
-        function Complete-ProgressAndChilren($Ids, $CompleteNow) {
-            while ($Ids -ne $null) {
-                # Complete
-                $Ids | Where-Object { $CompleteNow -and ($_ -in $ProgressEx.Keys) } | ForEach-Object {
+        # events, messages & store to the module variable
+        if ( $pInfo.Completed -or $Completed ) {
+            Write-ProgressExMessage $pInfo -ShowMessagesOnCompleted
 
-                    $ProgressEx[$_].Completed = $true
+            $pInfo.Completed = $true
+            $pInfo.Stopwatch = $null
 
-                    Write-ProgressExMessage $ProgressEx[$_] -ShowMessagesOnCompleted
-                    Write-ProgressExStd $ProgressEx[$_]
-
-                    $ProgressEx[$_].Stopwatch = $null
-                    $ProgressEx.Remove($_)
-                }
-
-                # Find children. $tmp used to avoid undefined behavior with $Ids inside and outside the pipe. Let me know if $tmp is not needed.
-                $tmp = $ProgressEx.Keys | Where-Object { $ProgressEx[$_].ParentId -in $Ids }
-                $Ids = $tmp
-
-                # Complete children anyway
-                $CompleteNow = $true
-            }
+            $ProgressEx.Remove($pInfo.Id)
         }
-
-        if ( $pInfo ) {
-            if ( -not $pInfo.Completed ) {
-                # events & messages
-                if ( -not $ProgressEx[$pInfo.Id].Stopwatch ) {
-                    if ( -not $pInfo.Stopwatch ) {
-                        $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-                    }
-                    Write-ProgressExMessage $pInfo -ShowMessagesOnFirstIteration
-                }
-                elseif ( $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity ) {
-                    Write-ProgressExMessage $pInfo -ShowMessagesOnNewActivity
-                }
-                elseif ( $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status ) {
-                    Write-ProgressExMessage $pInfo -ShowMessagesOnNewStatus
-                }
-
-                Write-ProgressExStd $pInfo
+        else {
+            if ( -not $ProgressEx[$pInfo.Id].Stopwatch ) {
+                Write-ProgressExMessage $pInfo -ShowMessagesOnFirstIteration
+            }
+            elseif ( $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity ) {
+                Write-ProgressExMessage $pInfo -ShowMessagesOnNewActivity
+            }
+            elseif ( $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status ) {
+                Write-ProgressExMessage $pInfo -ShowMessagesOnNewStatus
             }
 
             $ProgressEx[$pInfo.Id] = $pInfo
-            Complete-ProgressAndChilren $pInfo.id -CompleteNow $pInfo.Completed
         }
+
+        # Invoke standard write-progress cmdlet
+        if ( -not $pInfo.NoProgressBar -and $pInfo ) {
+            $pArgs = @{}
+            $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
+
+            if ( $pInfo.Total ) {
+                $pArgs.Activity = ($pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': ')
+            }
+            elseif ( $pInfo.Current ) {
+                $pArgs.Activity = ($pArgs.Activity, $pInfo.Current -join ': ')
+            }
+
+            # Activity is mandatory parameter for standard Write-Progress
+            if ( -not $pArgs.Activity ) {
+                $pArgs.Activity = '.'
+            }
+
+            Write-Progress @pArgs
+        }
+
+        # Recursive complete own children
+        $ProgressEx.Clone().values | Where-Object { $_.ParentId -eq $pInfo.id } | Set-ProgressEx -Completed
     }
 }
 
@@ -350,131 +313,65 @@ function Write-ProgressEx {
     )
 
     process {
-        $pInfo = Get-ProgressEx $id -Force
+        $isPipe = $inputObject -and ($MyInvocation.PipelineLength -gt 1)
 
-        if ( $ParentId ) {
-            $pInfo.ParentId = $ParentId
-        }
+        if ( $isPipe -or $PSBoundParameters.Count ) {
+            $pInfo = Get-ProgressEx $id -Force
+            $isFirstIteration = -not $pInfo.stopwatch
 
-        if ( $stopwatch ) {
-            $pInfo.stopwatch = $stopwatch
-        }
-
-        if ( $total ) {
-            $pInfo.Total = $total
-
-            if ( -not $Increment -and -not $inputObject ) {
-                $pInfo.PercentComplete = 0
-                $pInfo.Current = 0
+            $PSBoundParameters.Keys | ForEach-Object {
+                $pInfo[$_] = $PSBoundParameters[$_]
             }
 
-            if ( -not $pInfo.ParentId ) {
+            if ( $Total -and -not $pInfo.ParentId ) {
                 $ParentInfo = ($ProgressEx.Keys | Where-Object { $_ -lt $pInfo.id } | Measure-Object -Maximum).Maximum
                 if ( $ParentInfo -ne $null ) {
                     $pInfo.ParentId = $ParentInfo
                 }
             }
-        }
 
-        if ( $Current ) {
-            $pInfo.Current = $Current
-        }
+            if ( $isFirstIteration ) {
+                $pInfo.PercentComplete = 0
+                $pInfo.Current = 0
+                $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+            }
 
-        if ( $Increment -or $inputObject ) {
-            # next
-            $pInfo.Current = $pInfo.Current + 1
-        }
+            if ( $pInfo.Increment -or $isPipe ) {
+                $pInfo.Current += 1
+            }
 
-        $isCalcPossible = ($pInfo.Total -gt 0) -and ($pInfo.Current -gt 0) -and ($pInfo.Current -le $pInfo.Total)
+            if ( ($pInfo.Total -gt 0) -and ($pInfo.Current -gt 0) -and ($pInfo.Current -le $pInfo.Total) ) {
+                if ( -not $PercentComplete ) {
+                    $pInfo.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
+                }
 
-        if ( $PercentComplete ) {
-            $pInfo.PercentComplete = $PercentComplete
-        }
-        elseif ( $isCalcPossible ) {
-            $pInfo.PercentComplete = [Math]::Min( [Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
-        }
+                if ( -not $SecondsRemaining -and $pInfo.Stopwatch ) {
+                    $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $pInfo.stopwatch.Elapsed.TotalSeconds * [Math]::Max(0, $pInfo.Total - $pInfo.Current) / $pInfo.Current)
+                }
+            }
 
-        if ( $SecondsRemaining ) {
-            $pInfo.SecondsRemaining = $SecondsRemaining
-        }
-        elseif ( $isCalcPossible -and $pInfo.stopwatch  ) {
-            $pInfo.SecondsRemaining = [Math]::Max(0, 1 + $pInfo.stopwatch.Elapsed.TotalSeconds * [Math]::Max(0, $pInfo.Total - $pInfo.Current) / $pInfo.Current)
-        }
+            # autoname it. The caller function name used as activity
+            if ( -not $pInfo.Activity ) {
+                $pInfo.Activity = (Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
+            }
 
-        if ( $Completed -or -not ($PSBoundParameters.Count -or ($MyInvocation.PipelineLength -gt 1)) ) {
-            $pInfo.Completed = $true
+            Set-ProgressEx $pInfo
         }
-
-        if ( $Activity ) {
-            $pInfo.Activity = $Activity
+        else {
+            # No parameters outside pipe - Complete all
+            $ProgressEx.Clone().values | Set-ProgressEx -Completed
         }
-
-        if ( -not $pInfo.Activity ) {
-            $pInfo.Activity = (Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
-        }
-
-        if ( $Status ) {
-            $pInfo.Status = $Status
-        }
-
-        if ( $CurrentOperation ) {
-            $pInfo.CurrentOperation = $CurrentOperation
-        }
-
-        if ( $SourceId ) {
-            $pInfo.SourceId = $SourceId
-        }
-
-        if ( $NoProgressBar ) {
-            $pInfo.NoProgressBar = $NoProgressBar
-        }
-
-        if ( $ShowMessagesOnFirstIteration ) {
-            $pInfo.ShowMessagesOnFirstIteration = $ShowMessagesOnFirstIteration
-        }
-
-        if ( $ShowMessagesOnNewActivity ) {
-            $pInfo.ShowMessagesOnNewActivity = $ShowMessagesOnNewActivity
-        }
-
-        if ( $ShowMessagesOnNewStatus ) {
-            $pInfo.ShowMessagesOnNewStatus = $ShowMessagesOnNewStatus
-        }
-
-        if ( $ShowMessagesOnCompleted ) {
-            $pInfo.ShowMessagesOnCompleted = $ShowMessagesOnCompleted
-        }
-
-        if ( $MessageOnFirstIteration ) {
-            $pInfo.MessageOnFirstIteration = $MessageOnFirstIteration
-        }
-
-        if ( $MessageOnNewActivity ) {
-            $pInfo.MessageOnNewActivity = $MessageOnNewActivity
-        }
-
-        if ( $MessageOnNewStatus ) {
-            $pInfo.MessageOnNewStatus = $MessageOnNewStatus
-        }
-
-        if ( $MessageOnCompleted ) {
-            $pInfo.MessageOnCompleted = $MessageOnCompleted
-        }
-
-        # Store to global and call standard Write-Progress to display progress
-        Set-ProgressEx $pInfo
 
         # PassThru
-        if ( $inputObject ) {
+        if ( $isPipe ) {
             $inputObject
         }
     }
 
     end {
         if ( $MyInvocation.PipelineLength -gt 1 ) {
-            $pInfo = Get-ProgressEx -Id $id -Force
-            $pInfo.Completed = $true
-            Set-ProgressEx $pInfo
+            # Autocomplete itself and own children
+            Get-ProgressEx -Id $id -Force | Set-ProgressEx -Completed
         }
     }
 }

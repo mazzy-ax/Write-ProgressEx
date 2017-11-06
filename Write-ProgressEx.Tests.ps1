@@ -1,5 +1,8 @@
-# mazzy@mazzy.ru, 2017-10-14
+# mazzy@mazzy.ru, 2017-11-06
 # https://github.com/mazzy-ax/Write-progressEx
+
+#requires -version 3.0
+Set-StrictMode -Version 1.0
 
 $me = Split-Path -Leaf $PSCommandPath
 $path = Split-Path -Parent $PSCommandPath
