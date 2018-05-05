@@ -1,20 +1,25 @@
-mazzy@mazzy.ru, 2017-11-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
-
-![version](https://img.shields.io/badge/version-0.17-green.svg) ![license](https://img.shields.io/badge/license-MIT-blue.svg) [![Powershell Gallery](https://img.shields.io/badge/Powershell-Gallery-blue.svg)](https://www.powershellgallery.com/packages/write-ProgressEx)
-
----
-
 # Write-ProgressEx: extended write-progress cmdlet
 
-**Write-ProgressEx** extend the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.
+[project]:https://github.com/mazzy-ax/Write-ProgressEx
+[version.svg]:https://img.shields.io/badge/version-0.18-green.svg
+[license]:https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE
+[license.svg]:https://img.shields.io/badge/license-MIT-blue.svg
+[ps]:https://www.powershellgallery.com/packages/Write-ProgressEx
+[ps.svg]:https://img.shields.io/powershellgallery/dt/Write-ProgressEx.svg?colorB=4682B4
+[nuget]:https://www.nuget.org/packages/Write-ProgressEx
+[nuget.svg]:https://img.shields.io/nuget/dt/Write-ProgressEx.svg?label=NuGet&colorB=ef8b00
 
-![icon](/Media/Write-ProgressEx-icon.png "Write-ProgressEx")
+[![version][version.svg]][project] [![license MIT][license.svg]][license] [![PowerShell Gallery][ps.svg]][ps] [![NuGet][nuget.svg]][nuget]
+
+[Write-ProgressEx][project] extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.
+
+![icon](Media/Write-ProgressEx-icon.png "Write-ProgressEx")
 
 The cmdlet:
 
 * works with pipe;
 * works with empty activity string;
-* uses [system.diagnostic.stopwatch] to calculate remaning seconds and dispaly a total elapsed time;
+* uses [system.diagnostic.stopwatch] to calculate remaining seconds and display a total elapsed time;
 * completes all inner progresses if no parameters;
 * automatically completes with pipe;
 * automatically calculates percents;
@@ -33,7 +38,7 @@ The cmdlet:
 
 Note 1: the cmdlet is not safe with multi-thread.
 
-# Examples
+## Examples
 
 A pipe and a simple loop:
 
@@ -71,16 +76,16 @@ $outer | Write-ProgressEx "pipe nodes" -Status "outer" -Total $outer.Count -Show
 
 More samples are in the folder [Examples](Examples).
 
-# Installation
+## Installation
 
-Automatic install Write-ProgressEx module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/write-ProgressEx):
+Automatic install Write-ProgressEx module from the [PowerShell Gallery][ps]:
 
 ```powershell
 Install-Module -Name Write-ProgressEx
 Import-Module Write-ProgressEx
 ```
 
-Automatic install Write-ProgressEx module from the [NuGet.org](https://www.nuget.org/packages/Write-ProgressEx):
+Automatic install Write-ProgressEx module from the [NuGet.org][nuget]:
 
 ```powershell
 Install-Package -Name Write-ProgressEx
@@ -90,11 +95,18 @@ Import-Module Write-ProgressEx
 or manual:
 
 * Download and unblock the latest .zip file.
-* Extract the .zip into your $PSModulePath, e.g. ~\Documents\WindowsPowerShell\Modules.
-* Ensure the extracted folder is named 'Write-ProgressEx'.
-* Set an execution policy to RemoteSigned or Unrestricted to execute not signed modules 'Set-ExecutionPolicy RemoteSigned'.
-* Run 'Import-Module Write-ProgressEx'.
+* Extract the .zip into your `$PSModulePath`, e.g. `~\Documents\WindowsPowerShell\Modules`.
+* Ensure the extracted folder is named `Write-ProgressEx`.
+* Set an execution policy to `RemoteSigned` or `Unrestricted` to execute not signed modules `Set-ExecutionPolicy RemoteSigned`.
+* Run `Import-Module Write-ProgressEx`.
 
-# Changelog
+## Changelog
 
-See file [CHANGELOG.md](CHANGELOG.md).
+* [CHANGELOG.md](CHANGELOG.md)
+* <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
+
+## License
+
+This project is [licensed under the MIT License][license].
+
+mazzy@mazzy.ru

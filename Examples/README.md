@@ -1,5 +1,3 @@
-mazzy@mazzy.ru, 2017-10-21, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
-
 # Examples
 
 ## [Write-ProgressEx.pipe.ps1](Write-ProgressEx.pipe.ps1)

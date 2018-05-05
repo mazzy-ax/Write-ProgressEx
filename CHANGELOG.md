@@ -1,8 +1,20 @@
-mazzy@mazzy.ru, 2017-11-06, [https://github.com/mazzy-ax/Write-ProgressEx](https://github.com/mazzy-ax/Write-ProgressEx)
-
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to the project <https://github.com/mazzy-ax/Write-ProgressEx> will be documented in this file. See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
+
+## [v0.18](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.17...v0.18) - 2018-05-06
+
+* The function `Set-ProgressEx` fixed.
+* The example `Write-ProgressEx.autoName.ps1` fixed.
+* The cmdlet `Set-StrictMode` removed from project scripts.
+* The directive `#require -version 3.0` removed from project scripts.
+* The function `nz` extracted from `Write-ProgressExMessage`.
+* The `chocolateyInstall.ps1` removed.
+* The directory structure reorganized to remove media, examples and tests from nuget downloads and powershell gallery.
+* The project meta info tests added.
+* Tests fixed.
+* Readme changed.
+* Typo corrected.
 
 ## [v0.17](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.16...v0.17) - 2017-11-06
 
@@ -10,7 +22,7 @@ All notable changes to this project will be documented in this file.
 * The internal function Write-ProgressExStd removed. It was not exported function.
 * It has refactoring of Cmdlets
   * Set-ProgressEx show standard progress bar as is. This cmdlet does not make a changing of parameters.
-  * Write-Progress maintains parameters and switches. It calculates RemainSeconds, PercendComplete, increment Current value, passthrow InputValue. It call Set-ProgressEx to show standard progress bar and messages.
+  * Write-Progress maintains parameters and switches. It calculates RemainSeconds, PercentComplete, increment Current value, passthru InputValue. It call Set-ProgressEx to show standard progress bar and messages.
 
 ## [v0.16](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.15...v0.16) - 2017-10-27
 

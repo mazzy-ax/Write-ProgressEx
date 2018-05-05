@@ -2,35 +2,31 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Write-ProgressEx</id>
-    <version>0.17</version>
+    <version>0.18</version>
     <authors>Sergey Mazurkin</authors>
     <licenseUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/mazzy-ax/Write-ProgressEx</projectUrl>
     <iconUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>
-Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.
-    </description>
+    <description>Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.</description>
     <releaseNotes>
-v0.16
+## v0.18
 
-* The cmdlet uses an array of scriptblocks for each event instead a scriptblock
-* NoProgressBar error fixed
-
-See CHANGELOG.md
+* The function Set-ProgressEx fixed.
+* The example Write-ProgressEx.autoName.ps1 fixed.
+* The cmdlet Set-StrictMode removed from project scripts.
+* The directive #require -version 3.0 removed from project scripts.
+* The function nz extracted from Write-ProgressExMessage.
+* The chocolateyInstall.ps1 removed.
+* The directory structure reorganized to remove media, examples and tests from nuget downloads and powershell gallery.
+* The project meta info tests added.
+* Tests fixed.
+* Readme changed.
+* Typo corrected.
     </releaseNotes>
     <tags>Progress ProgressBar Write-Progress</tags>
   </metadata>
   <files>
-    <file src="Write-ProgressEx.psm1" />
-    <file src="Write-ProgressEx.psd1" />
-    <file src="Write-ProgressEx.Tests.ps1" />
-    <file src="Write-ProgressEx.nuspec" />
-    <file src="LICENSE*" />
-    <file src="README.md" />
-    <file src="CHANGELOG.md" />
-    <file src="Examples\**\*.*" target="\Examples" />
-    <file src="Media\**\*.*" target="\Media" />
-    <file src="Tools\**\*.*" target="\Tools" />
+    <file src="Write-ProgressEx\**\*.*" target="\" />
   </files>
 </package>

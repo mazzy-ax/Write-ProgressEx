@@ -1,8 +1,5 @@
-# mazzy@mazzy.ru, 2017-11-06
+﻿# mazzy@mazzy.ru, 2018-05-05
 # https://github.com/mazzy-ax/Write-ProgressEx
-
-#requires -version 3.0
-Set-StrictMode -Version 1.0
 
 #region Module variables
 
@@ -62,15 +59,19 @@ function Get-ProgressEx {
         $pInfo = $ProgressEx[$Id]
 
         if ( $pInfo -is [hashtable] ) {
-            return $pInfo.Clone()
+            $pInfo.Clone()
         }
-
-        if ( $Force ) {
-            return @{Id = $id}
+        elseif ( $Force ) {
+            @{Id = $id}
         }
-
-        $null
+        else {
+            $null
+        }
     }
+}
+
+function nz ($a, $b) {
+    if ($a) { $a } else { $b }
 }
 
 function Write-ProgressExMessage {
@@ -109,10 +110,6 @@ function Write-ProgressExMessage {
     )
 
     process {
-        function nz ($a, $b) {
-            if ($a) { $a } else { $b }
-        }
-
         if ( $ShowMessagesOnFirstIteration -and $pInfo.ShowMessagesOnFirstIteration ) {
             $Message = nz $pInfo.MessageOnFirstIteration $ProgressExDefault.MessageOnFirstIteration
         }
@@ -160,7 +157,7 @@ function Set-ProgressEx {
     Write-ProgressEx recommended.
 
     #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [hashtable]$pInfo,
@@ -169,6 +166,8 @@ function Set-ProgressEx {
     )
 
     process {
+        $idx = nz $pInfo.Id 0
+
         # events, messages & store to the module variable
         if ( $pInfo.Completed -or $Completed ) {
             Write-ProgressExMessage $pInfo -ShowMessagesOnCompleted
@@ -176,20 +175,20 @@ function Set-ProgressEx {
             $pInfo.Completed = $true
             $pInfo.Stopwatch = $null
 
-            $ProgressEx.Remove($pInfo.Id)
+            $ProgressEx.Remove($idx)
         }
         else {
-            if ( -not $ProgressEx[$pInfo.Id].Stopwatch ) {
+            if ( -not $ProgressEx[$idx].Stopwatch ) {
                 Write-ProgressExMessage $pInfo -ShowMessagesOnFirstIteration
             }
-            elseif ( $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity ) {
+            elseif ( $pInfo.Activity -ne $ProgressEx[$idx].Activity ) {
                 Write-ProgressExMessage $pInfo -ShowMessagesOnNewActivity
             }
-            elseif ( $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status ) {
+            elseif ( $pInfo.Status -ne $ProgressEx[$idx].Status ) {
                 Write-ProgressExMessage $pInfo -ShowMessagesOnNewStatus
             }
 
-            $ProgressEx[$pInfo.Id] = $pInfo
+            $ProgressEx[$idx] = $pInfo
         }
 
         # Invoke standard write-progress cmdlet
@@ -213,7 +212,7 @@ function Set-ProgressEx {
         }
 
         # Recursive complete own children
-        $ProgressEx.Clone().values | Where-Object { $_.ParentId -eq $pInfo.id } | Set-ProgressEx -Completed
+        $ProgressEx.Clone().values | Where-Object { $_.ParentId -eq $idx } | Set-ProgressEx -Completed
     }
 }
 
@@ -325,7 +324,7 @@ function Write-ProgressEx {
 
             if ( $Total -and -not $pInfo.ParentId ) {
                 $ParentInfo = ($ProgressEx.Keys | Where-Object { $_ -lt $pInfo.id } | Measure-Object -Maximum).Maximum
-                if ( $ParentInfo -ne $null ) {
+                if ( $null -ne $ParentInfo ) {
                     $pInfo.ParentId = $ParentInfo
                 }
             }
