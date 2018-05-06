@@ -22,7 +22,7 @@
 
 ![screenshot: Write-ProgressEx. Counter](../Media/examples.counter.png)
 
-## [Write-ProgressEx.counter.ps1](Write-ProgressEx.autoName.ps1)
+## [Write-ProgressEx.autoName.ps1](Write-ProgressEx.autoName.ps1)
 
 The cmdlet use a script file name as an Activity...
 ![screenshot: Write-ProgressEx. Multi](../Media/examples.autoName-1.png)
