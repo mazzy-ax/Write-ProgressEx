@@ -4,7 +4,7 @@ $moduleName = Split-Path $moduleRoot -Leaf
 
 Import-Module $moduleName -Force
 
-Describe "Write-ProgressEx" -Tag "Run", "UnitTest", "UT" {
+Describe "Write-ProgressEx" -Tag Run, UnitTest, UT {
     $outerLevel = 1..3
     $innerLevel = 1..2
 
@@ -84,7 +84,7 @@ Describe "Write-ProgressEx" -Tag "Run", "UnitTest", "UT" {
                 (Get-ProgressEx -id 1).Total | Should -BeNullOrEmpty
                 break
             }
-            (Get-ProgressEx -id 0) | Should -BeNullOrEmpty
+            Get-ProgressEx -id 0 | Should -BeNullOrEmpty
         }
 
         It "complete children progress when 'previous' id used" {
@@ -119,7 +119,7 @@ Describe "Write-ProgressEx" -Tag "Run", "UnitTest", "UT" {
     }
 }
 
-Describe "Get-ProgressEx" -Tag "Run", "UnitTest", "UT" {
+Describe "Get-ProgressEx" -Tag Run, UnitTest, UT {
 
     Context "work" {
         It "get" {
@@ -180,7 +180,7 @@ Describe "Get-ProgressEx" -Tag "Run", "UnitTest", "UT" {
     }
 }
 
-Describe "Set-ProgressEx" -Tag "Run", "UnitTest", "UT" {
+Describe "Set-ProgressEx" -Tag Run, UnitTest, UT {
 
     Context "work" {
         It "work" {

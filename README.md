@@ -1,19 +1,20 @@
-# Write-ProgressEx: extended write-progress cmdlet
+# Write-ProgressEx &ndash; extended write-progress cmdlet
 
 [project]:https://github.com/mazzy-ax/Write-ProgressEx
-[version.svg]:https://img.shields.io/badge/version-0.18-green.svg
 [license]:https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE
-[license.svg]:https://img.shields.io/badge/license-MIT-blue.svg
 [ps]:https://www.powershellgallery.com/packages/Write-ProgressEx
-[ps.svg]:https://img.shields.io/powershellgallery/dt/Write-ProgressEx.svg?colorB=4682B4
 [nuget]:https://www.nuget.org/packages/Write-ProgressEx
+
+[version.svg]:https://img.shields.io/badge/version-0.19-green.svg
+[license.svg]:https://img.shields.io/badge/license-MIT-blue.svg
+[ps.svg]:https://img.shields.io/powershellgallery/dt/Write-ProgressEx.svg?colorB=4682B4
 [nuget.svg]:https://img.shields.io/nuget/dt/Write-ProgressEx.svg?label=NuGet&colorB=ef8b00
 
 [![version][version.svg]][project] [![license MIT][license.svg]][license] [![PowerShell Gallery][ps.svg]][ps] [![NuGet][nuget.svg]][nuget]
 
-[Write-ProgressEx][project] extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.
+[Write-ProgressEx][project] extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provides a simple way to show ProgressBars with PercentComplete and SecondsRemaining.
 
-![icon](Media/Write-ProgressEx-icon.png "Write-ProgressEx")
+![Write-ProgressEx icon](Media/Write-ProgressEx-icon.png "Write-ProgressEx")
 
 The cmdlet:
 
@@ -33,8 +34,8 @@ The cmdlet:
   * status changed;
   * completed.
 * uses script blocks to show messages;
-* provide counter functional. See [Write-ProgressEx as a counter](Examples/Write-ProgressEx.counter.ps1);
-* use the caller function name or the caller script file name as the Activity.
+* provides counter functional. See [Write-ProgressEx as a counter](Examples/Write-ProgressEx.counter.ps1);
+* uses the caller function name or the caller script file name as the Activity.
 
 Note 1: the cmdlet is not safe with multi-thread.
 

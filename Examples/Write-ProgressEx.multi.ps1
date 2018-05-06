@@ -1,8 +1,14 @@
+#Requires -module Write-ProgressEx
+
+# To install the module from https://www.powershellgallery.com/packages/Write-ProgressEx run the powershell command:
+# PS> Install-Module Write-ProgressEx
+#
+# see https://github.com/mazzy-ax/Write-ProgressEx for details
+
 $level1 = 1..6
 $level2 = 1..9
 $level3 = 1..11
 $global = 1..900
-
 
 write-ProgressEx "Try to change the height of the console window..." -Total $level1.Count
 $level1 | write-ProgressEx | ForEach-Object {

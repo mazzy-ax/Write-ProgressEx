@@ -58,6 +58,14 @@ Describe 'Module Manifest Tests' -Tag 'Meta' {
         $manifest.Version -as [Version] | Should be ( $ChangelogVersion -as [Version] )
     }
 
+    It 'description have not back quote' {
+        $manifest.Description | Should -Not -Match '`'
+    }
+
+    It 'release notes have not back quote' {
+        $manifest.PrivateData.PSData.ReleaseNotes | Should -Not -Match '`'
+    }
+
 }
 
 Describe 'Nuget specification Tests' -Tag 'Meta' {
@@ -93,7 +101,7 @@ Describe 'Nuget specification Tests' -Tag 'Meta' {
 
 }
 
-Describe "$readme Tests" -Tag 'Meta' {
+Describe "$readme Tests" -Tag Meta {
 
     It "has a valid shields.io/badge/version in the $readme file" {
         Get-Content -Path $projectRoot\$readme |

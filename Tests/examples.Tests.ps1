@@ -4,7 +4,7 @@ $moduleName = Split-Path $moduleRoot -Leaf
 
 Import-Module $moduleRoot -Force
 
-Describe "Module $moduleName examples Tests" -Tag 'Build' {
+Describe "Module $moduleName examples Tests" -Tag Build, Examples {
 
     Get-ChildItem $projectRoot\Examples\*.ps1 -Recurse | ForEach-Object {
         It "ok for $_" {

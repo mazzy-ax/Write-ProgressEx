@@ -1,4 +1,4 @@
-﻿# mazzy@mazzy.ru, 2018-05-05
+﻿# mazzy@mazzy.ru, 2018-05-06
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #region Module variables
@@ -6,10 +6,10 @@
 $ProgressEx = @{}
 
 $ProgressExDefault = @{
-    MessageOnFirstIteration = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
-    MessageOnNewActivity    = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnNewStatus      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnCompleted      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] $($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"}
+    MessageOnFirstIteration = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
+    MessageOnNewActivity    = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnNewStatus      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
+    MessageOnCompleted      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.stopwatch.Elapsed)"}
 }
 
 $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
@@ -62,7 +62,7 @@ function Get-ProgressEx {
             $pInfo.Clone()
         }
         elseif ( $Force ) {
-            @{Id = $id}
+            @{Id = $id; Reset = $true}
         }
         else {
             $null
@@ -88,24 +88,24 @@ function Write-ProgressExMessage {
     .NOTES
     This function is not exported
     #>
-    [cmdletbinding(DefaultParameterSetName = 'Message')]
+    [cmdletbinding(DefaultParameterSetName = 'CustomMessage')]
     param(
         [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [hashtable]$pInfo,
 
-        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Message')]
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CustomMessage')]
         [scriptblock[]]$Message,
 
-        [Parameter(ParameterSetName = 'OnFirstIteration')]
+        [Parameter(ParameterSetName = 'StdMessage')]
         [switch]$ShowMessagesOnFirstIteration,
 
-        [Parameter(ParameterSetName = 'OnNewActivity')]
+        [Parameter(ParameterSetName = 'StdMessage')]
         [switch]$ShowMessagesOnNewActivity,
 
-        [Parameter(ParameterSetName = 'OnNewStatus')]
+        [Parameter(ParameterSetName = 'StdMessage')]
         [switch]$ShowMessagesOnNewStatus,
 
-        [Parameter(ParameterSetName = 'OnCompleted')]
+        [Parameter(ParameterSetName = 'StdMessage')]
         [switch]$ShowMessagesOnCompleted
     )
 
@@ -166,41 +166,43 @@ function Set-ProgressEx {
     )
 
     process {
-        $idx = nz $pInfo.Id 0
+        if ( -not $pInfo ) {
+            $pInfo = Get-ProgressEx -Force
+        }
 
-        # events, messages & store to the module variable
-        if ( $pInfo.Completed -or $Completed ) {
-            Write-ProgressExMessage $pInfo -ShowMessagesOnCompleted
-
+        if ( $Completed ) {
             $pInfo.Completed = $true
-            $pInfo.Stopwatch = $null
+        }
 
-            $ProgressEx.Remove($idx)
+        Write-ProgressExMessage @{
+            pInfo                        = $pInfo
+            ShowMessagesOnFirstIteration = $pInfo.Reset
+            ShowMessagesOnNewActivity    = $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity
+            ShowMessagesOnNewStatus      = $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status
+            ShowMessagesOnCompleted      = $pInfo.Completed
+        }
+
+        if ( $pInfo.Completed ) {
+            $pInfo.Stopwatch = $null
+            $ProgressEx.Remove($pInfo.Id)
         }
         else {
-            if ( -not $ProgressEx[$idx].Stopwatch ) {
-                Write-ProgressExMessage $pInfo -ShowMessagesOnFirstIteration
-            }
-            elseif ( $pInfo.Activity -ne $ProgressEx[$idx].Activity ) {
-                Write-ProgressExMessage $pInfo -ShowMessagesOnNewActivity
-            }
-            elseif ( $pInfo.Status -ne $ProgressEx[$idx].Status ) {
-                Write-ProgressExMessage $pInfo -ShowMessagesOnNewStatus
-            }
-
-            $ProgressEx[$idx] = $pInfo
+            $pInfo.Reset = $false
+            $ProgressEx[$pInfo.Id] = $pInfo
         }
 
         # Invoke standard write-progress cmdlet
-        if ( -not $pInfo.NoProgressBar -and $pInfo ) {
+        if ( -not $pInfo.NoProgressBar ) {
             $pArgs = @{}
-            $pInfo.Keys | Where-Object { $_ -in $StdParmNames } | ForEach-Object { $pArgs[$_] = $pInfo[$_] }
+            $pInfo.Keys | Where-Object { $StdParmNames -contains $_ } | ForEach-Object {
+                $pArgs[$_] = $pInfo[$_]
+            }
 
             if ( $pInfo.Total ) {
-                $pArgs.Activity = ($pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': ')
+                $pArgs.Activity = $pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': '
             }
             elseif ( $pInfo.Current ) {
-                $pArgs.Activity = ($pArgs.Activity, $pInfo.Current -join ': ')
+                $pArgs.Activity = $pArgs.Activity, $pInfo.Current -join ': '
             }
 
             # Activity is mandatory parameter for standard Write-Progress
@@ -212,7 +214,8 @@ function Set-ProgressEx {
         }
 
         # Recursive complete own children
-        $ProgressEx.Clone().values | Where-Object { $_.ParentId -eq $idx } | Set-ProgressEx -Completed
+        $childrenIds = $ProgressEx.values | Where-Object { $_.ParentId -eq $pInfo.Id } | ForEach-Object { $_.Id }
+        $childrenIds | Get-ProgressEx | Set-ProgressEx -Completed
     }
 }
 
@@ -291,6 +294,7 @@ function Write-ProgressEx {
         [ValidateRange(0, [int]::MaxValue)]
         [int]$Current, # current iteration number. It may be greather then $total.
 
+        [switch]$Reset,
         [switch]$Increment,
         [System.Diagnostics.Stopwatch]$Stopwatch,
 
@@ -316,20 +320,18 @@ function Write-ProgressEx {
 
         if ( $isPipe -or $PSBoundParameters.Count ) {
             $pInfo = Get-ProgressEx $id -Force
-            $isFirstIteration = -not $pInfo.stopwatch
 
             $PSBoundParameters.Keys | ForEach-Object {
                 $pInfo[$_] = $PSBoundParameters[$_]
             }
 
-            if ( $Total -and -not $pInfo.ParentId ) {
-                $ParentInfo = ($ProgressEx.Keys | Where-Object { $_ -lt $pInfo.id } | Measure-Object -Maximum).Maximum
-                if ( $null -ne $ParentInfo ) {
-                    $pInfo.ParentId = $ParentInfo
-                }
+            # auto parentId
+            if ( $pInfo.Reset -and $pInfo.Keys -notcontains 'ParentId' ) {
+                $ParentProbe = $ProgressEx.Keys | Where-Object { $_ -lt $pInfo.id } | Measure-Object -Maximum
+                $pInfo.ParentId = if ( $null -ne $ParentProbe.Maximum ) { $ParentProbe.Maximum } else { -1 }
             }
 
-            if ( $isFirstIteration ) {
+            if ( $pInfo.Reset ) {
                 $pInfo.PercentComplete = 0
                 $pInfo.Current = 0
                 $pInfo.stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -357,7 +359,7 @@ function Write-ProgressEx {
             Set-ProgressEx $pInfo
         }
         else {
-            # No parameters outside pipe - Complete all
+            # Complete all if it is No parameters and Not pipe.
             $ProgressEx.Clone().values | Set-ProgressEx -Completed
         }
 

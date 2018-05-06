@@ -1,6 +1,16 @@
 # Changelog
 
-All notable changes to the project <https://github.com/mazzy-ax/Write-ProgressEx> will be documented in this file. See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
+All notable changes to the [project](https://github.com/mazzy-ax/Write-ProgressEx) will be documented in this file. See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
+
+## [v0.19](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.18...v0.19) - 2018-05-06
+
+* The switch `Reset` added to `Write-ProgressEx` cmdlet.
+* Deep refactoring in the cmdlet `Set-ProgressEx`.
+* `On completed message` clarified.
+* The directive `#require -module Write-ProgressEx` added to example scripts.
+* Splatting example added.
+* Examples and tests cleanup.
+* Readme changed.
 
 ## [v0.18](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.17...v0.18) - 2018-05-06
 
@@ -45,7 +55,7 @@ All notable changes to the project <https://github.com/mazzy-ax/Write-ProgressEx
 ### Added
 
 * Example 'counter' demonstrate how to use [Write-ProgressEx cmdlet as counter](Examples/Write-ProgressEx.counter.ps1).
-* Tests with tag build added. It need to run and test exapmles.
+* Tests with tag build added. It need to run and test examples.
 
 ### Changed
 
@@ -81,7 +91,7 @@ All notable changes to the project <https://github.com/mazzy-ax/Write-ProgressEx
 * The Current can be more then Total. It's used to make iterations when Total is not known.
 * The Stopwatch redesigned: stopwatch start with first iterations. The messages uses the stopwatch to display a total elapsed time
 * The module icon
-* Exapmles and Readme
+* Examples and Readme
 
 ### Removed
 
@@ -109,14 +119,14 @@ All notable changes to the project <https://github.com/mazzy-ax/Write-ProgressEx
 
 ## [v0.8](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.7...v0.8) - 2017-08-08
 
-* Minor improvements with useage of parameter storage $ProgressEx
+* Minor improvements with usage of parameter storage $ProgressEx
 * The function Complete-progressAndChildren refactored
 
 ## [v0.7](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.6...v0.7) - 2017-08-06
 
 ### Main goal
 
-* Move parmeter storage from a global to a module scope
+* Move parameter storage from a global to a module scope
 * Provide a developer with functional to get/set actual parameters
 * Provide a developer with a splatting
 * Clarify and split logic to calculate progress parameters and logic to store its
@@ -142,4 +152,3 @@ All notable changes to the project <https://github.com/mazzy-ax/Write-ProgressEx
 ### Removed
 
 * $Global:ProgressExInfo
-

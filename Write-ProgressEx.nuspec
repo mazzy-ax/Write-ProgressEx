@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Write-ProgressEx</id>
-    <version>0.18</version>
+    <version>0.19</version>
     <authors>Sergey Mazurkin</authors>
     <licenseUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/mazzy-ax/Write-ProgressEx</projectUrl>
@@ -10,19 +10,15 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.</description>
     <releaseNotes>
-## v0.18
+## v0.19
 
-* The function Set-ProgressEx fixed.
-* The example Write-ProgressEx.autoName.ps1 fixed.
-* The cmdlet Set-StrictMode removed from project scripts.
-* The directive #require -version 3.0 removed from project scripts.
-* The function nz extracted from Write-ProgressExMessage.
-* The chocolateyInstall.ps1 removed.
-* The directory structure reorganized to remove media, examples and tests from nuget downloads and powershell gallery.
-* The project meta info tests added.
-* Tests fixed.
+* The switch Reset added to Write-ProgressEx cmdlet.
+* Deep refactoring in the cmdlet Set-ProgressEx.
+* 'On completed message' clarified.
+* The directive '#require -module Write-ProgressEx' added to example scripts.
+* Splatting example added.
+* Examples and tests cleanup.
 * Readme changed.
-* Typo corrected.
     </releaseNotes>
     <tags>Progress ProgressBar Write-Progress</tags>
   </metadata>

@@ -4,7 +4,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.18'
+ModuleVersion = '0.19'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -100,19 +100,15 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = @'
-## v0.18
+## v0.19
 
-* The function Set-ProgressEx fixed.
-* The example Write-ProgressEx.autoName.ps1 fixed.
-* The cmdlet Set-StrictMode removed from project scripts.
-* The directive #require -version 3.0 removed from project scripts.
-* The function nz extracted from Write-ProgressExMessage.
-* The chocolateyInstall.ps1 removed.
-* The directory structure reorganized to remove media, examples and tests from nuget downloads and powershell gallery.
-* The project meta info tests added.
-* Tests fixed.
+* The switch Reset added to Write-ProgressEx cmdlet.
+* Deep refactoring in the cmdlet Set-ProgressEx.
+* 'On completed message' clarified.
+* The directive '#require -module Write-ProgressEx' added to example scripts.
+* Splatting example added.
+* Examples and tests cleanup.
 * Readme changed.
-* Typo corrected.
 '@
 
         # External dependent modules of this module
