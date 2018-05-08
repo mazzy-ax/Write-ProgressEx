@@ -7,8 +7,8 @@
 
 [version.svg]:https://img.shields.io/badge/version-0.19-green.svg
 [license.svg]:https://img.shields.io/badge/license-MIT-blue.svg
-[ps.svg]:https://img.shields.io/powershellgallery/dt/Write-ProgressEx.svg?colorB=4682B4
-[nuget.svg]:https://img.shields.io/nuget/dt/Write-ProgressEx.svg?label=NuGet&colorB=ef8b00
+[ps.svg]:https://img.shields.io/badge/Powershell-Gallery-4682B4.svg
+[nuget.svg]:https://img.shields.io/badge/downloads-NuGet-orange.svg
 
 [![version][version.svg]][project] [![license MIT][license.svg]][license] [![PowerShell Gallery][ps.svg]][ps] [![NuGet][nuget.svg]][nuget]
 
