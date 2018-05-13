@@ -7,7 +7,13 @@
 
 $range = 1..1000
 
-write-ProgressEx 'wait, please' -Total $range.Count
+Write-Verbose @'
+-ShowProgress Force causes to show the progress bar in each iteration. It takes a long time.
+Default value for -ShowProgress parameter is Auto. It redraws the progress bar no more than once every 100 milliseconds.
+You can use -ShowProgress None to disable the progress bar display.
+'@
+
+write-ProgressEx 'wait, please' -Total $range.Count -ShowProgress Force
 $range | write-ProgressEx | ForEach-Object {
     $pInfo = Get-ProgressEx
 

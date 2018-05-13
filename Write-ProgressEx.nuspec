@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Write-ProgressEx</id>
-    <version>0.19</version>
+    <version>0.20</version>
     <authors>Sergey Mazurkin</authors>
     <licenseUrl>https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/mazzy-ax/Write-ProgressEx</projectUrl>
@@ -10,15 +10,13 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.</description>
     <releaseNotes>
-## v0.19
+## v0.20
 
-* The switch Reset added to Write-ProgressEx cmdlet.
-* Deep refactoring in the cmdlet Set-ProgressEx.
-* 'On completed message' clarified.
-* The directive '#require -module Write-ProgressEx' added to example scripts.
-* Splatting example added.
-* Examples and tests cleanup.
-* Readme changed.
+* [System.Diagnostics.Stopwatch]$Stopwatch replaced on [DateTime]$StartDateTime and [TimeSpan]$Elapsed
+* parameters added: paShowProgressBar, StartDateTime, ProgressDateTime, Elapsed, UpdateDateTime, UpdateInterval
+* parameter removed: NoProgressBar
+* fixed due changed parameters: cmdlets Get-ProgressEx, Set-ProgressEx, Write-ProgressEx cmdlets, examples and messages
+* reamde and comments updated
     </releaseNotes>
     <tags>Progress ProgressBar Write-Progress</tags>
   </metadata>

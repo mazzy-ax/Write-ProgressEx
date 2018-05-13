@@ -4,7 +4,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.19'
+ModuleVersion = '0.20'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -100,15 +100,13 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         ReleaseNotes = @'
-## v0.19
+## v0.20
 
-* The switch Reset added to Write-ProgressEx cmdlet.
-* Deep refactoring in the cmdlet Set-ProgressEx.
-* 'On completed message' clarified.
-* The directive '#require -module Write-ProgressEx' added to example scripts.
-* Splatting example added.
-* Examples and tests cleanup.
-* Readme changed.
+* [System.Diagnostics.Stopwatch]$Stopwatch replaced on [DateTime]$StartDateTime and [TimeSpan]$Elapsed
+* parameters added: paShowProgressBar, StartDateTime, ProgressDateTime, Elapsed, UpdateDateTime, UpdateInterval
+* parameter removed: NoProgressBar
+* fixed due changed parameters: cmdlets Get-ProgressEx, Set-ProgressEx, Write-ProgressEx cmdlets, examples and messages
+* reamde and comments updated
 '@
 
         # External dependent modules of this module

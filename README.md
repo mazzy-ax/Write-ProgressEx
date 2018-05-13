@@ -5,7 +5,7 @@
 [ps]:https://www.powershellgallery.com/packages/Write-ProgressEx
 [nuget]:https://www.nuget.org/packages/Write-ProgressEx
 
-[version.svg]:https://img.shields.io/badge/version-0.19-green.svg
+[version.svg]:https://img.shields.io/badge/version-0.20-green.svg
 [license.svg]:https://img.shields.io/badge/license-MIT-blue.svg
 [ps.svg]:https://img.shields.io/badge/Powershell-Gallery-4682B4.svg
 [nuget.svg]:https://img.shields.io/badge/downloads-NuGet-orange.svg
@@ -34,8 +34,9 @@ The cmdlet:
   * status changed;
   * completed.
 * uses script blocks to show messages;
-* provides counter functional. See [Write-ProgressEx as a counter](Examples/Write-ProgressEx.counter.ps1);
-* uses the caller function name or the caller script file name as the Activity.
+* provides a counter functional. See [Write-ProgressEx as a counter](Examples/Write-ProgressEx.counter.ps1);
+* uses the caller function name or the caller script file name as the Activity;
+* accepts `-ShowProgressBar Auto` parameter to reduce the overhead for redrawing a screen. It recognizes `None` and `Force` values also.
 
 Note 1: the cmdlet is not safe with multi-thread.
 
@@ -70,6 +71,13 @@ $outer | Write-ProgressEx "pipe nodes" -Status "outer" -Total $outer.Count -Show
     }
 }
 ```
+
+A long time command:
+
+```powershell
+$files = Get-ChildItem $env:homepath -recurse | Write-ProgressEx -Activity $env:homepath
+```
+
 
 ![screenshot: Write-ProgressEx](Media/examples.pipe.png)
 

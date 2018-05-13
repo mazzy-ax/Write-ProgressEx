@@ -1,6 +1,25 @@
 # Changelog
 
-All notable changes to the [project](https://github.com/mazzy-ax/Write-ProgressEx) will be documented in this file. See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
+All notable changes to the [project](https://github.com/mazzy-ax/Write-ProgressEx) will be documented in this file.
+See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
+
+## [v0.20](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.19...v0.20) - 2018-05-13
+
+* [System.Diagnostics.Stopwatch]$Stopwatch replaced on [DateTime]$StartDateTime and [TimeSpan]$Elapsed
+* parameters removed:
+  * `NoProgressBar`
+* parameters added:
+  * `ShowProgressBar` with `Auto`, `Force` and `None` values
+  * `StartDateTime`
+  * `ProgressDateTime`
+  * `Elapsed`
+  * `UpdateDateTime`
+  * `UpdateInterval`
+* fixed due changed parameters:
+  * Get-ProgressEx, Set-ProgressEx, Write-ProgressEx cmdlets
+  * examples
+  * messages
+* reamde and comments updated
 
 ## [v0.19](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.18...v0.19) - 2018-05-06
 
