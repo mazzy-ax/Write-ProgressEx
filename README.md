@@ -72,16 +72,15 @@ $outer | Write-ProgressEx "pipe nodes" -Status "outer" -Total $outer.Count -Show
 }
 ```
 
+![screenshot: Write-ProgressEx](Media/examples.pipe.png)
+
+![screenshot: Result messages](Media/examples.messages.png)
+
 A long time command:
 
 ```powershell
 $files = Get-ChildItem $env:homepath -recurse | Write-ProgressEx -Activity $env:homepath
 ```
-
-
-![screenshot: Write-ProgressEx](Media/examples.pipe.png)
-
-![screenshot: Result messages](Media/examples.messages.png)
 
 More samples are in the folder [Examples](Examples).
 
