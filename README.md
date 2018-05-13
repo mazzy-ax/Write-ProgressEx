@@ -20,10 +20,9 @@ The cmdlet:
 
 * works with pipe;
 * works with empty activity string;
-* uses [system.diagnostic.stopwatch] to calculate remaining seconds and display a total elapsed time;
 * completes all inner progresses if no parameters;
 * automatically completes with pipe;
-* automatically calculates percents;
+* automatically calculates percents, remaining seconds and elapsed time;
 * automatically displays current iteration and totals on progress bar;
 * automatically set parent id for a inner loop;
 * stores totals, current values and actual parameters into the module hashtable;
