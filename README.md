@@ -27,17 +27,16 @@ The cmdlet:
 * automatically set parent id for a inner loop;
 * stores totals, current values and actual parameters into the module hashtable;
 * provides get/set cmdlets to access actual parameters;
-* show messages with date, time, iterations and elapsed time on events:
+* uses script blocks to show messages with date, time, iterations and elapsed time on events:
   * first iteration;
   * activity changed;
   * status changed;
   * completed.
-* uses script blocks to show messages;
 * provides a counter functional. See [Write-ProgressEx as a counter](Examples/Write-ProgressEx.counter.ps1);
 * uses the caller function name or the caller script file name as the Activity;
 * accepts `-ShowProgressBar Auto` parameter to reduce the overhead for redrawing a screen. It recognizes `None` and `Force` values also.
 
-Note 1: the cmdlet is not safe with multi-thread.
+Note: the cmdlet is not safe with multi-thread.
 
 ## Examples
 
