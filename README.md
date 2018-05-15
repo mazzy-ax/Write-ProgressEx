@@ -4,17 +4,15 @@
 [license]:https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE
 [ps]:https://www.powershellgallery.com/packages/Write-ProgressEx
 [nuget]:https://www.nuget.org/packages/Write-ProgressEx
+[appveyor]:https://ci.appveyor.com/project/mazzy-ax/write-progressex
 
-[version.svg]:https://img.shields.io/badge/version-0.20-green.svg
-[license.svg]:https://img.shields.io/badge/license-MIT-blue.svg
-[ps.svg]:https://img.shields.io/badge/Powershell-Gallery-4682B4.svg
-[nuget.svg]:https://img.shields.io/badge/downloads-NuGet-orange.svg
+[![Build status](https://ci.appveyor.com/api/projects/status/5r91g2yxk74a46mi?svg=true)][appveyor]
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/Write-ProgressEx.svg)][ps]
+[![NuGet](https://buildstats.info/nuget/Write-ProgressEx)][nuget]
+<img src="https://raw.githubusercontent.com/mazzy-ax/Write-ProgressEx/master/Media/Write-ProgressEx-icon.png" align="right" alt="Write-ProgressEx icon">
 
-[![version][version.svg]][project] [![license MIT][license.svg]][license] [![PowerShell Gallery][ps.svg]][ps] [![NuGet][nuget.svg]][nuget]
 
 [Write-ProgressEx][project] extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provides a simple way to show ProgressBars with PercentComplete and SecondsRemaining.
-
-![Write-ProgressEx icon](Media/Write-ProgressEx-icon.png "Write-ProgressEx")
 
 The cmdlet:
 
@@ -113,6 +111,6 @@ or manual:
 
 ## License
 
-This project is [licensed under the MIT License][license].
+This project is released under the [licensed under the MIT License][license].
 
 mazzy@mazzy.ru

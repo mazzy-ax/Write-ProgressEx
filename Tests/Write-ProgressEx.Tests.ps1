@@ -2,7 +2,7 @@ $projectRoot = Resolve-Path "$PSScriptRoot\.."
 $moduleRoot = Split-Path (Resolve-Path "$projectRoot\*\*.psd1")
 $moduleName = Split-Path $moduleRoot -Leaf
 
-Import-Module $moduleName -Force
+#Import-Module ../$moduleName -Force
 
 Describe "Write-ProgressEx" -Tag Run, UnitTest, UT {
     $outerLevel = 1..3

@@ -1,0 +1,28 @@
+# See http://www.appveyor.com/docs/appveyor-yml for many more options
+
+version: 0.20.{build}
+
+skip_commits:
+  message: /readme.*|doc.*/
+
+only_commits:
+  files:
+    - $env:APPVEYOR_PROJECT_NAME/
+    - $env:APPVEYOR_PROJECT_NAME.nuspec
+
+init:
+- ps: |
+    $PSVersionTable
+    [System.Environment]::OSVersion
+
+install:
+- ps: |
+    Install-Module -Name Pester, PSScriptAnalyzer -Force
+
+build:
+- ps: |
+    Import-Module ./$env:APPVEYOR_PROJECT_NAME
+
+test_script:
+- ps: |
+    Invoke-Pester -EnableExit

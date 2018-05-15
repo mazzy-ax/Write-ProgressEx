@@ -100,16 +100,3 @@ Describe 'Nuget specification Tests' -Tag 'Meta' {
     }
 
 }
-
-Describe "$readme Tests" -Tag Meta {
-
-    It "has a valid shields.io/badge/version in the $readme file" {
-        Get-Content -Path $projectRoot\$readme |
-            Where-Object { $_ -match '\[version.svg\]:https://img\.shields\.io/badge/version-(?<Version>(\d+\.){1,3}\d+)-green\.svg' } | 
-            Select-Object -First 1 | Should Not BeNullOrEmpty
-
-        $ReadmeVersion = $matches.Version
-        $ReadmeVersion | Should Be $manifest.Version
-    }
-
-}
