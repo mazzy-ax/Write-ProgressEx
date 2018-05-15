@@ -19,7 +19,7 @@ install:
 - ps: |
     Install-Module -Name Pester, PSScriptAnalyzer -Force
 
-build:
+build_script:
 - ps: |
     Import-Module ./$env:APPVEYOR_PROJECT_NAME
 
