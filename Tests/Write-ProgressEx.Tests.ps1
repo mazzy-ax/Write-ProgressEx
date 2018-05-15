@@ -4,7 +4,7 @@ $moduleName = Split-Path $moduleRoot -Leaf
 
 #Import-Module ../$moduleName -Force
 
-Describe "Write-ProgressEx" -Tag Run, UnitTest, UT {
+Describe "Unit tests for a $moduleName basic functional" -Tag Run, UnitTest, UT {
     $outerLevel = 1..3
     $innerLevel = 1..2
 

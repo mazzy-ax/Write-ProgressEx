@@ -3,7 +3,6 @@ $moduleRoot = Split-Path (Resolve-Path $projectRoot\*\*.psd1)
 $moduleName = Split-Path $moduleRoot -Leaf
 
 $changelog = 'CHANGELOG.md'
-$readme = 'README.md'
 
 $script:manifest = $null
 
