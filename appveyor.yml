@@ -39,4 +39,4 @@ test_script:
     $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile TestsResults.xml -PassThru
     $dest = "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)"
     (New-Object 'System.Net.WebClient').UploadFile($dest, (Resolve-Path TestsResults.xml))
-    if ($res.FailedCount) { throw "$($res.FailedCount) tests failed."}
+    if ($res.FailedCount) { throw "$($res.FailedCount) tests failed." }
