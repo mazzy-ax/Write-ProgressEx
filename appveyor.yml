@@ -6,12 +6,12 @@ only_commits:
   files:
     - $env:APPVEYOR_PROJECT_NAME/
     - $env:APPVEYOR_PROJECT_NAME.nuspec
+    - Examples/
+    - Tests/
     - appveyor.yml
 
 skip_commits:
   message: /readme.*|doc.*/
-
-skip_non_tags: true
 
 image:
 - Visual Studio 2017
