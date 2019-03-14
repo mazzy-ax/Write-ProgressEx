@@ -8,7 +8,7 @@
 $nodes = 1..20
 $names = 1..50
 
-$nodes | write-ProgressEx "pipe nodes" -Total $nodes.Count -Status "outer" -ShowMessages | ForEach-Object {
+$nodes | write-ProgressEx "pipe nodes" -Total $nodes.Count -Status "outer" -ShowMessages -ShowConsoleTitle -ShowElapsed | ForEach-Object {
     $names | write-ProgressEx "pipe names" -Total $names.Count -id 1 -Status "inner" | ForEach-Object {
         #...
     }
