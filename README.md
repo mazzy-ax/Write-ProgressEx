@@ -75,7 +75,8 @@ $outer | Write-ProgressEx "pipe nodes" -Status "outer" -Total $outer.Count -Show
 A long time command:
 
 ```powershell
-$files = Get-ChildItem $env:homepath -recurse | Write-ProgressEx -Activity $env:homepath
+$path = $env:homepath
+$files = Get-ChildItem $path -Recurse | Write-ProgressEx $path
 ```
 
 More samples are in the folder [Examples](Examples).
