@@ -3,6 +3,10 @@
 All notable changes to the [project](https://github.com/mazzy-ax/Write-ProgressEx) will be documented in this file.
 See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
 
+## [v0.21](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.20...v0.21)
+
+* 
+
 ## [v0.20](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.19...v0.20) - 2018-05-13
 
 * [System.Diagnostics.Stopwatch]$Stopwatch replaced on [DateTime]$StartDateTime and [TimeSpan]$Elapsed
