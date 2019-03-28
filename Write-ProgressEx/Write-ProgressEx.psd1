@@ -4,7 +4,7 @@
 RootModule = 'Write-ProgressEx.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.20'
+ModuleVersion = '0.21'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -99,15 +99,7 @@ PrivateData = @{
         IconUri = 'https://github.com/mazzy-ax/Write-ProgressEx/blob/master/Media/Write-ProgressEx-icon.png?raw=true'
 
         # ReleaseNotes of this module
-        ReleaseNotes = @'
-## v0.20
-
-* [System.Diagnostics.Stopwatch]$Stopwatch replaced on [DateTime]$StartDateTime and [TimeSpan]$Elapsed
-* parameters added: paShowProgressBar, StartDateTime, ProgressDateTime, Elapsed, UpdateDateTime, UpdateInterval
-* parameter removed: NoProgressBar
-* fixed due changed parameters: cmdlets Get-ProgressEx, Set-ProgressEx, Write-ProgressEx cmdlets, examples and messages
-* reamde and comments updated
-'@
+        ReleaseNotes = 'see [CHANGELOG.md](https://github.com/mazzy-ax/Write-ProgressEx/blob/master/CHANGELOG.md)'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
