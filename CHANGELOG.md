@@ -3,9 +3,13 @@
 All notable changes to the [project](https://github.com/mazzy-ax/Write-ProgressEx) will be documented in this file.
 See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
 
-## [v0.21](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.20...v0.21)
+## [v0.21](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.20...v0.21) - 2019-03-28
 
-* 
+* examples improved:
+  * param `delayMS` added to examples. The default value (30 ms) is used when the user runs this script, 0 is used in unit tests
+  * `Write-ProgressEx` with empty arguments added to the start of each example. It fixes problems when the user interrupts the example and runs another example
+  * `-ShowConsoleTitle` parameter added to the pipe example
+* trail spaces removed due style check
 
 ## [v0.20](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.19...v0.20) - 2018-05-13
 

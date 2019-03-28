@@ -5,6 +5,13 @@
 #
 # see https://github.com/mazzy-ax/Write-ProgressEx for details
 
+param(
+    [Parameter(HelpMessage='Specifies how long each iteration sleeps in milliseconds. The default value is used when the user runs this script, 0 is used in unit tests.')]
+    [int]$delayMS = 30
+)
+
+Write-ProgressEx    # reset incomplete runs
+
 $nodes = 1..20
 $names = 1..50
 
@@ -25,8 +32,9 @@ $progressNames = @{
 
 # splatting. see https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting
 
-$nodes | write-ProgressEx @progressNode | ForEach-Object {
-    $names | write-ProgressEx @progressNames | ForEach-Object {
+$nodes | Write-ProgressEx @progressNode | ForEach-Object {
+    $names | Write-ProgressEx @progressNames | ForEach-Object {
         #...
+        Start-Sleep -Milliseconds $delayMS
     }
 }

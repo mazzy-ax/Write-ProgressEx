@@ -5,7 +5,14 @@
 #
 # see https://github.com/mazzy-ax/Write-ProgressEx for details
 
-$range = 1..1000
+param(
+    [Parameter(HelpMessage='Specifies how long each iteration sleeps in milliseconds. The default value is used when the user runs this script, 0 is used in unit tests.')]
+    [int]$delayMS = 30
+)
+
+Write-ProgressEx    # reset incomplete runs
+
+$range = 1..500
 
 Write-Verbose @'
 -ShowProgress Force causes to show the progress bar in each iteration. It takes a long time.
@@ -13,8 +20,8 @@ Default value for -ShowProgress parameter is Auto. It redraws the progress bar n
 You can use -ShowProgress None to disable the progress bar display.
 '@
 
-write-ProgressEx 'wait, please' -Total $range.Count -ShowProgress Force
-$range | write-ProgressEx | ForEach-Object {
+Write-ProgressEx 'wait, please' -Total $range.Count
+$range | Write-ProgressEx | ForEach-Object {
     $pInfo = Get-ProgressEx
 
     if ( $pInfo.SecondsRemaining -lt 5 ) {
@@ -22,6 +29,8 @@ $range | write-ProgressEx | ForEach-Object {
 
         # The splatting to Write-ProgressEx is a common pattern to use progress info. It's recalculate parameters and refresh progress on the console.
         Write-ProgressEx @pInfo
+        #...
+        Start-Sleep -Milliseconds $delayMS
     }
 
     # ...
@@ -31,6 +40,8 @@ $range | write-ProgressEx | ForEach-Object {
 
         # A rare pattern to use progress info. It isn't recalulate. It refresh progress on the console only.
         Set-ProgressEx $pInfo
+        #...
+        Start-Sleep -Milliseconds $delayMS
     }
 }
-write-ProgressEx
+Write-ProgressEx

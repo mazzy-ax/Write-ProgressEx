@@ -8,7 +8,7 @@ Describe "Module $moduleName examples Tests" -Tag Build, Examples {
 
     Get-ChildItem $projectRoot\Examples\*.ps1 -Recurse | ForEach-Object {
         It "ok for $_" {
-            & $_ 3>&1 4>&1 | Out-Null
+            & $_ -delayMS 0 3>&1 4>&1 | Out-Null
             $? | Should Be $true
         }
     }

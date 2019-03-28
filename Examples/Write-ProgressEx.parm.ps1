@@ -5,16 +5,24 @@
 #
 # see https://github.com/mazzy-ax/Write-ProgressEx for details
 
-$nodes = 1..20
-$names = 1..50
+param(
+    [Parameter(HelpMessage='Specifies how long each iteration sleeps in milliseconds. The default value is used when the user runs this script, 0 is used in unit tests.')]
+    [int]$delayMS = 30
+)
 
-write-ProgressEx "parm nodes" -Total $nodes.Count -ShowMessagesOnCompleted
+Write-ProgressEx    # reset incomplete runs
+
+$nodes = 1..10
+$names = 1..120
+
+Write-ProgressEx "parm nodes" -Total $nodes.Count -ShowMessagesOnCompleted
 $nodes | ForEach-Object {
-    write-ProgressEx "parm names" -Total $names.Count -id 1
+    Write-ProgressEx "parm names" -Total $names.Count -id 1
     $names | ForEach-Object {
+        Write-ProgressEx -id 1 -increment -Status "inner"
         #...
-        write-ProgressEx -id 1 -increment -Status "inner"
+        Start-Sleep -Milliseconds $delayMS
     }
-    write-ProgressEx -Status "outer" -increment
+    Write-ProgressEx -Status "outer" -increment
 }
-write-ProgressEx -complete
+Write-ProgressEx -complete
