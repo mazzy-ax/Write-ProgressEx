@@ -5,8 +5,11 @@ $moduleName = Split-Path $moduleRoot -Leaf
 Describe "PSScriptAnalyzer Rules for $moduleName" -Tag Meta, BestPractice, BP {
     $analysis = Invoke-ScriptAnalyzer -Path $projectRoot -Recurse
 
-    It "Should be Ok" {
-        $analysis | Should -BeNullOrEmpty
+    $analysis | ForEach-Object {
+        $_ | Out-Default
     }
 
+    It "Should be 0 diagnostic messages" {
+        $analysis.count | Should -Be 0
+    }
 }
