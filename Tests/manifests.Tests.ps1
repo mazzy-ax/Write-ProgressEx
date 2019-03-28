@@ -45,7 +45,7 @@ Describe 'Module Manifest Tests' -Tag 'Meta' {
 
     It "has a valid version on the top of $projectRoot\$changelog" {
         Get-Content -Path $projectRoot\$changelog |
-            Where-Object { $_ -match '^\D*(?<Version>(\d+\.){1,3}\d+)' } | 
+            Where-Object { $_ -match '^\D*(?<Version>(\d+\.){1,3}\d+)' } |
             Select-Object -First 1 | Should Not BeNullOrEmpty
 
         $script:ChangelogVersion = $matches.Version
@@ -86,7 +86,7 @@ Describe 'Nuget specification Tests' -Tag 'Meta' {
     It 'nuspec and manifest release notes are same' {
         $nuspecReleaseNotes = $nuspec.package.metadata.ReleaseNotes -replace '\s'
         $manifestReleaseNotes = $manifest.PrivateData.PSData.ReleaseNotes -replace '\s'
-        
+
         $nuspecReleaseNotes | Should Be $manifestReleaseNotes
     }
 
