@@ -4,7 +4,7 @@ version: 0.21.{build}
 
 only_commits:
   files:
-    - $env:APPVEYOR_PROJECT_NAME/*
+    - $env:APPVEYOR_PROJECT_NAME/
     - $env:APPVEYOR_PROJECT_NAME.nuspec
     - Examples/*.ps1
     - Tests/*.ps1
