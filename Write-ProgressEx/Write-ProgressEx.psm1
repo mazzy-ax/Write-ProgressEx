@@ -384,7 +384,7 @@ function Write-ProgressEx {
 
             if ( $pInfo.Reset -and $pInfo.Id -gt 0 -and $PSBoundParameters.Keys -notcontains 'ParentId' ) {
                 # auto parentId
-                $parentIdFounded = $ProgressEx.Keys | Where-Object { $pInfo.id -gt $_ } | Sort-Object -Descending | Select-Object -First 1
+                $parentIdFounded = $ProgressEx.Keys | Where-Object { $pInfo.Id -gt $_ } | Sort-Object -Descending | Select-Object -First 1
                 if( $null -ne $parentIdFounded ) {
                     $pInfo.ParentId = $parentIdFounded
                 }
