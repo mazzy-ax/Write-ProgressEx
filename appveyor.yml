@@ -25,10 +25,6 @@ install:
     Install-Package -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck -PackageManagementProvider PowerShellGet | Out-Null
     Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
 
-build_script:
-- ps: |
-    Import-Module ./$env:APPVEYOR_PROJECT_NAME
-
 test_script:
 - ps: |
     $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile TestsResults.xml -PassThru
