@@ -11,8 +11,7 @@
 [![NuGet](https://buildstats.info/nuget/Write-ProgressEx)][nuget]
 <img src="https://raw.githubusercontent.com/mazzy-ax/Write-ProgressEx/master/Media/Write-ProgressEx-icon.png" align="right" alt="Write-ProgressEx icon">
 
-
-[Write-ProgressEx][project] extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell native cmdlet that provides a simple way to show ProgressBars with PercentComplete and SecondsRemaining.
+[Write-ProgressEx][project] extends the functionality of the standard powershell cmdlet. Write-ProgressEx is a powershell advanced function that provides a simple way to show ProgressBars with PercentComplete and SecondsRemaining.
 
 The cmdlet:
 
@@ -22,6 +21,7 @@ The cmdlet:
 * automatically completes with pipe;
 * automatically calculates percents, remaining seconds and elapsed time;
 * automatically displays current iteration and totals on progress bar;
+* automatically displays info with a progress bar and at the console title;
 * automatically set parent id for a inner loop;
 * stores totals, current values and actual parameters into the module hashtable;
 * provides get/set cmdlets to access actual parameters;
@@ -34,7 +34,7 @@ The cmdlet:
 * uses the caller function name or the caller script file name as the Activity;
 * accepts `-ShowProgressBar Auto` parameter to reduce the overhead for redrawing a screen. It recognizes `None` and `Force` values also.
 
-Note: the cmdlet is not safe with multi-thread.
+Note: the function is not safe with multi-thread.
 
 ## Examples
 

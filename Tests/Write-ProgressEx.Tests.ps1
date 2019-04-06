@@ -1,8 +1,10 @@
+#Requires -module @{ ModuleName="Pester"; ModuleVersion="4.2.0" }
+
 $projectRoot = Resolve-Path "$PSScriptRoot\.."
 $moduleRoot = Split-Path (Resolve-Path "$projectRoot\*\*.psd1")
 $moduleName = Split-Path $moduleRoot -Leaf
 
-#Import-Module ../$moduleName -Force
+Import-Module $moduleRoot -Force
 
 Describe "Unit tests for a $moduleName basic functional" -Tag Run, UnitTest, UT {
     $outerLevel = 1..3
@@ -131,7 +133,7 @@ Describe "Get-ProgressEx" -Tag Run, UnitTest, UT {
         }
     }
 
-    Context "functional" {
+    Context "Id functional" {
         It "name parameter" {
             $pInfo = Get-ProgressEx -id 1
             $pInfo | Should -BeNullOrEmpty
@@ -164,7 +166,7 @@ Describe "Get-ProgressEx" -Tag Run, UnitTest, UT {
 
         It "pipe array parameter" {
             $pInfo = 1, 30, 40 | Get-ProgressEx
-            $pInfo.Count | Should -Be 3
+            $pInfo | Should -HaveCount 3
             $pInfo[0] | Should -BeNullOrEmpty
             $pInfo[1] | Should -BeNullOrEmpty
             $pInfo[2] | Should -BeNullOrEmpty
@@ -172,7 +174,55 @@ Describe "Get-ProgressEx" -Tag Run, UnitTest, UT {
 
         It "pipe array parameter -force" {
             $pInfo = 1, 30, 40 | Get-ProgressEx -force
-            $pInfo.Count | Should -Be 3
+            $pInfo | Should -HaveCount 3
+            $pInfo[0].Id | Should -Be 1
+            $pInfo[1].Id | Should -Be 30
+            $pInfo[2].Id | Should -Be 40
+        }
+    }
+
+    Context "pInfo functional" {
+        It "name parameter" {
+            $pInfo = Get-ProgressEx -pInfo @{Id = 1}
+            $pInfo | Should -BeNullOrEmpty
+        }
+
+        It "name parameter -force" {
+            $pInfo = Get-ProgressEx -pInfo @{Id = 1} -force
+            $pInfo.Id | Should -Be 1
+        }
+
+        It "position parameter" {
+            $pInfo = Get-ProgressEx @{Id = 1}
+            $pInfo | Should -BeNullOrEmpty
+        }
+
+        It "position parameter -force" {
+            $pInfo = Get-ProgressEx @{Id = 1} -force
+            $pInfo.Id | Should -Be 1
+        }
+
+        It "pipe parameter" {
+            $pInfo = @{Id = 1} | Get-ProgressEx
+            $pInfo | Should -BeNullOrEmpty
+        }
+
+        It "pipe parameter -force" {
+            $pInfo = @{Id = 1} | Get-ProgressEx -force
+            $pInfo.Id | Should -Be 1
+        }
+
+        It "pipe array parameter" {
+            $pInfo = @{Id = 1}, @{Id = 30}, @{Id = 40} | Get-ProgressEx
+            $pInfo | Should -HaveCount 3
+            $pInfo[0] | Should -BeNullOrEmpty
+            $pInfo[1] | Should -BeNullOrEmpty
+            $pInfo[2] | Should -BeNullOrEmpty
+        }
+
+        It "pipe array parameter -force" {
+            $pInfo = @{Id = 1}, @{Id = 30}, @{Id = 40} | Get-ProgressEx -force
+            $pInfo | Should -HaveCount 3
             $pInfo[0].Id | Should -Be 1
             $pInfo[1].Id | Should -Be 30
             $pInfo[2].Id | Should -Be 40

@@ -22,7 +22,7 @@ CompanyName = 'mazzy'
 Copyright = 'Copyright (c) 2017 Sergey Mazurkin, licensed under MIT License.'
 
 # Description of the functionality provided by this module
-Description = 'Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell native cmdlet that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.'
+Description = 'Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell advanced function that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'

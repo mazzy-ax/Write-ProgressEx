@@ -1,15 +1,18 @@
-﻿# mazzy@mazzy.ru, 2018-05-13
+﻿# mazzy@mazzy.ru, 2019-04-03
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #region Module variables
 
-$ProgressEx = @{}
+$ProgressEx = @{ }
 
 $ProgressExDefault = @{
-    MessageOnFirstIteration = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start."}
-    MessageOnNewActivity    = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnNewStatus      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):"}
-    MessageOnCompleted      = {param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.Elapsed))"}
+    MessageOnFirstIteration = { param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): start." }
+    MessageOnNewActivity    = { param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):" }
+    MessageOnNewStatus      = { param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status):" }
+    MessageOnCompleted      = { param([hashtable]$pInfo) Write-Warning "[$(Get-Date)] Id=$($pInfo.Id):$($pInfo.Activity):$($pInfo.Status): done. Iterations=$($pInfo.Current), Elapsed=$($pInfo.Elapsed))" }
+    UpdateIntervalMin       = [timespan]::FromMilliseconds(200)
+    UpdateIntervalMax       = [timespan]::FromSeconds(1)
+    UpdateUntervalThreshold = [timespan]::FromMinutes(1)
 }
 
 $StdParmNames = (Get-Command Write-Progress).Parameters.Keys
@@ -32,8 +35,8 @@ function Get-ProgressEx {
 
     .EXAMPLE
     $range = 1..1000
-    write-ProgressEx 'wait, please' -Total $range.Count
-    $range | write-ProgressEx | ForEach-Object {
+    Write-ProgressEx 'wait, please' -Total $range.Count
+    $range | Write-ProgressEx | ForEach-Object {
         $pInfo = Get-ProgressEx
 
         if ( $pInfo.SecondsRemaining -lt 5 ) {
@@ -45,17 +48,24 @@ function Get-ProgressEx {
     It's recalculate parameters and refresh progress on the console.
 
     #>
-    [cmdletbinding()]
+    [cmdletbinding(DefaultParameterSetName='Id')]
     [OutputType([hashtable])]
     param(
-        [Parameter(ValueFromPipeline = $true, Position = 0)]
+        [Parameter(ValueFromPipeline = $true, Position = 0, ParameterSetName = 'Id')]
         [ValidateRange(0, [int]::MaxValue)]
-        [int]$Id = 0,
+        [int]$Id,
+
+        [Parameter(ValueFromPipeline = $true, Position = 0, ParameterSetName = 'ProgressInfo')]
+        [hashtable]$pInfo,
 
         [switch]$Force
     )
 
     process {
+        if( $pInfo ) {
+            $Id = $pInfo.Id
+        }
+
         $pInfo = $ProgressEx[$Id]
 
         if ( $pInfo -is [hashtable] ) {
@@ -63,64 +73,12 @@ function Get-ProgressEx {
         }
         elseif ( $Force ) {
             @{
-                Id             = $id
-                Reset          = $true
-                UpdateInterval = [TimeSpan]::FromMilliseconds(100)
+                Id    = $id
+                Reset = $true
             }
         }
         else {
             $null
-        }
-    }
-}
-
-function nz ($a, $b) {
-    if ($a) { $a } else { $b }
-}
-
-function Write-ProgressExMessage {
-    <#
-    .SYNOPSIS
-    Write a message to output.
-
-    .PARAMETER pInfo
-    The progress info returned by Get-ProgressEx
-
-    .PARAMETER Message
-    The message
-
-    .NOTES
-    This function is not exported
-    #>
-    [cmdletbinding()]
-    param(
-        [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [hashtable]$pInfo,
-
-        [scriptblock[]]$Message,
-        [switch]$ShowMessagesOnFirstIteration,
-        [switch]$ShowMessagesOnNewActivity,
-        [switch]$ShowMessagesOnNewStatus,
-        [switch]$ShowMessagesOnCompleted
-    )
-
-    process {
-        if ( $ShowMessagesOnFirstIteration -and $pInfo.ShowMessagesOnFirstIteration ) {
-            $Message = nz $pInfo.MessageOnFirstIteration $ProgressExDefault.MessageOnFirstIteration
-        }
-        elseif ( $ShowMessagesOnNewActivity -and $pInfo.ShowMessagesOnNewActivity ) {
-            $Message = nz $pInfo.MessageOnNewActivity $ProgressExDefault.MessageOnNewActivity
-        }
-        elseif ( $ShowMessagesOnNewStatus -and $pInfo.ShowMessagesOnNewStatus ) {
-            $Message = nz $pInfo.MessageOnNewStatus $ProgressExDefault.MessageOnNewStatus
-        }
-        elseif ( $ShowMessagesOnCompleted -and $pInfo.ShowMessagesOnCompleted ) {
-            $Message = nz $pInfo.MessageOnCompleted $ProgressExDefault.MessageOnCompleted
-        }
-
-        # message may use all variable values in all scope
-        $Message | Where-Object { $_ } | ForEach-Object {
-            Invoke-Command -ScriptBlock $_ -ArgumentList $pInfo -ErrorAction SilentlyContinue
         }
     }
 }
@@ -143,8 +101,8 @@ function Set-ProgressEx {
 
     .EXAMPLE
     $range = 1..1000
-    write-ProgressEx 'wait, please' -Total $range.Count
-    $range | write-ProgressEx | ForEach-Object {
+    Write-ProgressEx 'wait, please' -Total $range.Count
+    $range | Write-ProgressEx | ForEach-Object {
         $pInfo = Get-ProgressEx
         if ( $pInfo.PercentComplete -gt 50 ) {
             $pInfo['Status'] = 'hard work in progress'
@@ -166,46 +124,110 @@ function Set-ProgressEx {
 
     process {
         if ( -not $pInfo ) {
-            $pInfo = Get-ProgressEx -Force
+            return # $pInfo = Get-ProgressEx -Force
         }
 
         if ( $Completed ) {
             $pInfo.Completed = $true
         }
 
-        Write-ProgressExMessage $pInfo `
-            -ShowMessagesOnFirstIteration:($pInfo.Reset) `
-            -ShowMessagesOnNewActivity:($pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity) `
-            -ShowMessagesOnNewStatus:($pInfo.Status -ne $ProgressEx[$pInfo.Id].Status) `
-            -ShowMessagesOnCompleted:($pInfo.Completed)
-
-        $shouldShowProgressBar = switch ( $pInfo.ShowProgressBar ) {
-            'None' { $false }
-            'Force' { $true }
-            Default {
-                try {
-                    $pInfo.Completed -or
-                    $pInfo.UpdateInterval -le (New-TimeSpan -End $pInfo.ProgressDateTime -Start $pInfo.UpdateDateTime)
-                }
-                catch {
-                    $true
-                }
+        #region message
+        if ( $pInfo.ShowMessagesOnFirstIteration -and $pInfo.Reset ) {
+            $Message = if ( $pInfo.MessageOnFirstIteration ) {
+                $pInfo.MessageOnFirstIteration
+            }
+            else {
+                $ProgressExDefault.MessageOnFirstIteration
+            }
+        }
+        elseif ( $pInfo.ShowMessagesOnNewActivity -and $pInfo.Activity -ne $ProgressEx[$pInfo.Id].Activity ) {
+            $Message = if ( $pInfo.MessageOnNewActivity ) {
+                $pInfo.MessageOnNewActivity
+            }
+            else {
+                $ProgressExDefault.MessageOnNewActivity
+            }
+        }
+        elseif ( $pInfo.ShowMessagesOnNewStatus -and $pInfo.Status -ne $ProgressEx[$pInfo.Id].Status ) {
+            $Message = if ( $pInfo.MessageOnNewStatus ) {
+                $pInfo.MessageOnNewStatus
+            }
+            else {
+                $ProgressExDefault.MessageOnNewStatus
+            }
+        }
+        elseif ( $pInfo.ShowMessagesOnCompleted -and $pInfo.Completed ) {
+            $Message = if ( $pInfo.MessageOnCompleted ) {
+                $pInfo.MessageOnCompleted
+            }
+            else {
+                $ProgressExDefault.MessageOnCompleted
             }
         }
 
+        # message may use all variable values in all scope
+        foreach ($m in $Message) {
+            Invoke-Command -ScriptBlock $m -ArgumentList $pInfo -ErrorAction SilentlyContinue
+        }
+        #endregion message
+
+        $shouldShowProgressBar = $pInfo.Reset -or $pInfo.Completed -or $(
+            switch ( $pInfo.ShowProgressBar ) {
+                'Force' { $True }
+                'None' { $False }
+                Default {
+                    try {
+                        $updateInterval = if ( $pinfo.UpdateInterval -is [timespan] ) {
+                            $pinfo.UpdateInterval
+                        }
+                        elseif ( $pinfo.Remaining -is [timespan] ) {
+                            if ( $pinfo.Remaining -le $ProgressExDefault.UpdateIntervalTreshold ) {
+                                $ProgressExDefault.UpdateIntervalMin
+                            }
+                            else {
+                                $ProgressExDefault.UpdateIntervalMax
+                            }
+                        }
+                        else {
+                            0
+                        }
+
+                        $updateInterval -and $updateInterval -le (New-TimeSpan -Start $pInfo.UpdateDateTime -End $pInfo.ProgressDateTime)
+                    }
+                    catch {
+                        $True
+                    }
+                }
+            }
+        )
+
         # Invoke standard write-progress cmdlet
         if ( $shouldShowProgressBar ) {
-            $pArgs = @{}
+            $pArgs = @{ }
             $pInfo.Keys | Where-Object { $StdParmNames -contains $_ } | ForEach-Object {
                 $pArgs[$_] = $pInfo[$_]
             }
 
             # Decorate activity
             if ( $pInfo.Total ) {
-                $pArgs.Activity = $pArgs.Activity, ($pInfo.Current, $pInfo.Total -join '/') -join ': '
+                $pArgs.Activity = '{0}/{1}: {2}' -f $pInfo.Current, $pInfo.Total, $pArgs.Activity
             }
             elseif ( $pInfo.Current ) {
-                $pArgs.Activity = $pArgs.Activity, $pInfo.Current -join ': '
+                $pArgs.Activity = '{0}: {1}' -f $pInfo.Current, $pArgs.Activity
+            }
+
+            if ( $pInfo.ShowElapsed -and $pInfo.Elapsed -as [TimeSpan] ) {
+                $ElapsedSeconds = [TimeSpan]::FromSeconds([int]($pInfo.Elapsed.Ticks / [TimeSpan]::TicksPerSecond))
+                if ( $ElapsedSeconds.TotalSeconds ) {
+                    $pArgs.Activity = '{0}: {1} elapsed ({2:N} ips).' -f $pArgs.Activity, $ElapsedSeconds, ($pInfo.Current / $ElapsedSeconds.TotalSeconds)
+                }
+                else {
+                    $pArgs.Activity = '{0}: {1} elapsed.' -f $pArgs.Activity, $ElapsedSeconds
+                }
+            }
+
+            if ( $pInfo.showConsoleTitle ) {
+                $host.ui.RawUI.WindowTitle = if ( $pInfo.Completed ) { "" } else { $pArgs.Activity }
             }
 
             # Activity is mandatory parameter for standard Write-Progress
@@ -227,8 +249,8 @@ function Set-ProgressEx {
         }
 
         # Recursive complete own children
-        $childrenIds = $ProgressEx.values | Where-Object { $_.ParentId -eq $pInfo.Id } | ForEach-Object { $_.Id }
-        $childrenIds | Get-ProgressEx | Set-ProgressEx -Completed
+        $child = $ProgressEx.values | Where-Object { $pInfo.Id -eq $_.ParentId -and $pInfo.Id -ne $_.Id }
+        $child | Get-ProgressEx | Set-ProgressEx -Completed
     }
 }
 
@@ -295,7 +317,7 @@ function Write-ProgressEx {
         [int]$PercentComplete,
         [int]$SecondsRemaining,
         [string]$CurrentOperation,
-        [int]$ParentId,
+        [int]$ParentId = -1,
         [int]$SourceId,
         [switch]$Completed,
 
@@ -312,13 +334,20 @@ function Write-ProgressEx {
         [switch]$Increment,
 
         [DateTime]$ProgressDateTime,
+        [Alias('Started')]
         [DateTime]$StartDateTime,
-        [TimeSpan]$Elapsed,
 
+        [TimeSpan]$Elapsed,
+        [TimeSpan]$Remaining,
+
+        [Alias('Updated')]
         [DateTime]$UpdateDateTime,
         [TimeSpan]$UpdateInterval,
 
-        [ValidateSet('Auto', 'Force', 'None')] # Different first letters make typing fast
+        [switch]$ShowConsoleTitle,
+        [switch]$ShowElapsed,
+
+        [ValidateSet('Auto', 'Force', 'None')]
         [string]$ShowProgressBar,
 
         # Message templates
@@ -336,7 +365,7 @@ function Write-ProgressEx {
     )
 
     process {
-        $isPipe = $inputObject -and ($MyInvocation.PipelineLength -gt 1)
+        $isPipe = ($null -ne $inputObject) -and ($MyInvocation.PipelineLength -gt 1)
 
         if ( $isPipe -or $PSBoundParameters.Count ) {
             $pInfo = Get-ProgressEx $id -Force
@@ -349,11 +378,15 @@ function Write-ProgressEx {
                 $pInfo.ProgressDateTime = Get-Date
             }
 
-            # auto parentId
-            if ( $pInfo.Reset -and $pInfo.Keys -notcontains 'ParentId' ) {
-                $ParentProbe = $ProgressEx.Keys | Where-Object { $_ -lt $pInfo.id } | Measure-Object -Maximum
-                if ( $null -ne $ParentProbe.Maximum ) {
-                    $pInfo.ParentId = $ParentProbe.Maximum
+            if ( $pInfo.Reset -and -not $StartDateTime ) {
+                $pInfo.StartDateTime = $pInfo.ProgressDateTime
+            }
+
+            if ( $pInfo.Reset -and $pInfo.Id -gt 0 -and $PSBoundParameters.Keys -notcontains 'ParentId' ) {
+                # auto parentId
+                $parentIdFounded = $ProgressEx.Keys | Where-Object { $pInfo.id -gt $_ } | Sort-Object -Descending | Select-Object -First 1
+                if( $null -ne $parentIdFounded ) {
+                    $pInfo.ParentId = $parentIdFounded
                 }
             }
 
@@ -361,32 +394,57 @@ function Write-ProgressEx {
                 $pInfo.Current = 0
             }
 
-            if ( $pInfo.Reset -and -not $StartDateTime ) {
-                $pInfo.StartDateTime = $pInfo.ProgressDateTime
-            }
-
-            if ( -not $Elapsed -and $pInfo.StartDateTime ) {
-                $pInfo.Elapsed = New-TimeSpan -End $pInfo.ProgressDateTime -Start $pInfo.StartDateTime
-            }
-
             $pInfo.Increment = $Increment -or $isPipe
             if ( $pInfo.Increment ) {
                 $pInfo.Current += 1
             }
 
-            if ( $pInfo.Total -and $pInfo.Current ) {
-                if ( -not $PercentComplete ) {
-                    [int]$pInfo.PercentComplete = [Math]::Min([Math]::Max(0, $pInfo.Current / $pInfo.Total * 100), 100)
-                }
+            if ( $Elapsed ) {
+                $pInfo.Elapsed = $Elapsed
+            }
+            elseif ( $pInfo.StartDateTime ) {
+                $pInfo.Elapsed = New-TimeSpan -End $pInfo.ProgressDateTime -Start $pInfo.StartDateTime
+            }
+            else {
+                $pInfo.Remove('Elapsed')
+            }
 
-                if ( -not $SecondsRemaining -and $pInfo.Elapsed ) {
-                    [int]$pInfo.SecondsRemaining = [Math]::Max(0, $pInfo.Elapsed.TotalSeconds * ($pInfo.Total - $pInfo.Current) / $pInfo.Current)
-                }
+            if ( $PercentComplete ) {
+                $pInfo.PercentComplete = $PercentComplete
+            }
+            elseif ( $pInfo.Total -and $pInfo.Current ) {
+                $pInfo.PercentComplete = [Math]::Min([Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
+            }
+            else {
+                $pInfo.Remove('PercentComplete')
+            }
+
+            if ( $Remaining ) {
+                $pInfo.Remaining = $Remaining
+            }
+            elseif ( $pInfo.Total -and $pInfo.Current -and $pInfo.Elapsed -as [TimeSpan] ) {
+                $pInfo.Remaining = [TimeSpan]::FromTicks($pInfo.Elapsed.Ticks / $pInfo.Current * ($pInfo.Total - $pInfo.Current))
+            }
+            else {
+                $pInfo.Remove('Remaining')
+            }
+
+            if ( $SecondsRemaining ) {
+                $pInfo.SecondsRemaining = $SecondsRemaining
+            }
+            elseif ( $pInfo.Remaining -as [TimeSpan] ) {
+                $pInfo.SecondsRemaining = [Math]::Max(0, $pInfo.Remaining.TotalSeconds)
+            }
+            else {
+                $pInfo.Remove('SecondsRemaining')
             }
 
             # autoname it. The caller function name used as activity
             if ( -not $pInfo.Activity ) {
-                $pInfo.Activity = (Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
+                $ActivityFound = (Get-PSCallStack).InvocationInfo.MyCommand.Name | Where-Object { $_ } | Select-Object -Skip 1 -First 1
+                if( $ActivityFound ) {
+                    $pInfo.Activity = $ActivityFound
+                }
             }
 
             Set-ProgressEx $pInfo

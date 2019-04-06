@@ -5,11 +5,23 @@ See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
 
 ## [v0.21](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.20...v0.21) - 2019-03-28
 
+* feature added:
+  * Show activity in the console title
+* parameters added:
+  * `Remaining`
+  * `ShowConsoleTitle`
+  * `ShowElapsed`
+* performance improved:
+* features improved:
+  * UpdateInterval, Reset, Elapsed, Remaining, PercentComplete, SecondsRemaining
+  * `auto name` feature works with functions and script names
 * examples improved:
   * param `delayMS` added to examples. The default value (30 ms) is used when the user runs this script, 0 is used in unit tests
-  * `Write-ProgressEx` with empty arguments added to the start of each example. It fixes problems when the user interrupts the example and runs another example
+  * `Write-ProgressEx` with empty arguments added to the begin of each example. It fixes problems when the user interrupts the example and runs another example
   * `-ShowConsoleTitle` parameter added to the pipe example
-* trail spaces removed due style check
+* style fixed:
+  * trail spaces removed due style check
+  * for case-sensitive systems, the name of the `Write-ProgressEx` method and other methods always uses same spelling
 
 ## [v0.20](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.19...v0.20) - 2018-05-13
 
