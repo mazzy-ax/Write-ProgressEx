@@ -14,12 +14,6 @@ Write-ProgressEx    # reset incomplete runs
 
 $range = 1..500
 
-Write-Verbose @'
--ShowProgress Force causes to show the progress bar in each iteration. It takes a long time.
-Default value for -ShowProgress parameter is Auto. It redraws the progress bar no more than once every 100 milliseconds.
-You can use -ShowProgress None to disable the progress bar display.
-'@
-
 Write-ProgressEx 'wait, please' -Total $range.Count
 $range | Write-ProgressEx | ForEach-Object {
     $pInfo = Get-ProgressEx
@@ -30,7 +24,6 @@ $range | Write-ProgressEx | ForEach-Object {
         # The splatting to Write-ProgressEx is a common pattern to use progress info. It's recalculate parameters and refresh progress on the console.
         Write-ProgressEx @pInfo
         #...
-        Start-Sleep -Milliseconds $delayMS
     }
 
     # ...
@@ -41,7 +34,8 @@ $range | Write-ProgressEx | ForEach-Object {
         # A rare pattern to use progress info. It isn't recalulate. It refresh progress on the console only.
         Set-ProgressEx $pInfo
         #...
-        Start-Sleep -Milliseconds $delayMS
     }
+    #...
+    Start-Sleep -Milliseconds $delayMS
 }
 Write-ProgressEx

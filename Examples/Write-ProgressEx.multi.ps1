@@ -24,7 +24,7 @@ $level1 | Write-ProgressEx | ForEach-Object {
 
         $level3 | Write-ProgressEx "Level3" -id 3 -Total $level3.Count -SecondsRemaining -1 -PercentComplete -1 | ForEach-Object {
 
-            Write-ProgressEx "Global" -id 50 -total $global.Count -increment -ParentId -1
+            Write-ProgressEx "Global" -id 50 -total $global.Count -Increment -ParentId -1
             #...
             Start-Sleep -Milliseconds $delayMS
         }
@@ -35,4 +35,5 @@ Write-ProgressEx -complete
 $pInfo = Get-ProgressEx -Id 50
 $pInfo.Current..$pInfo.Total | Write-ProgressEx -id 50 | ForEach-Object {
     #...
+    Start-Sleep -Milliseconds $delayMS
 }
