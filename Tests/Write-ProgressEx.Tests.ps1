@@ -66,7 +66,7 @@ Describe "Unit tests for a $moduleName basic functional" -Tag Run, UnitTest, UT 
             (Get-ProgressEx).Total | Should -Be $outerLevel.Count
         }
 
-        It "increment counter after the increment" {
+        It "increment counter after the -increment parameter" {
             Write-ProgressEx -Total $outerLevel.Count
             (Get-ProgressEx).current | Should -Be 0
 

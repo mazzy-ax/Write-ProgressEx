@@ -124,7 +124,7 @@ function Set-ProgressEx {
 
     process {
         if ( -not $pInfo ) {
-            return # $pInfo = Get-ProgressEx -Force
+            $pInfo = Get-ProgressEx -Force
         }
 
         if ( $Completed ) {
