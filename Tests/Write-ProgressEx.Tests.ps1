@@ -68,10 +68,10 @@ Describe "Unit tests for a $moduleName basic functional" -Tag Run, UnitTest, UT 
 
         It "increment counter after the -increment parameter" {
             Write-ProgressEx -Total $outerLevel.Count
-            (Get-ProgressEx).current | Should -Be 0
+            (Get-ProgressEx).Current | Should -Be 0
 
             Write-ProgressEx -increment
-            (Get-ProgressEx).current | Should -Be 1
+            (Get-ProgressEx).Current | Should -Be 1
         }
 
         It "autocomplete with pipe" {
@@ -92,15 +92,15 @@ Describe "Unit tests for a $moduleName basic functional" -Tag Run, UnitTest, UT 
         It "complete children progress when 'previous' id used" {
             Write-ProgressEx -Total $outerLevel.Count
             Write-ProgressEx -Total $innerLevel.Count -id 1
-            (Get-ProgressEx -id 0).current | Should -Be 0
-            (Get-ProgressEx -id 1).current | Should -Be 0
+            (Get-ProgressEx -id 0).Current | Should -Be 0
+            (Get-ProgressEx -id 1).Current | Should -Be 0
 
             Write-ProgressEx -id 1 -increment
-            (Get-ProgressEx -id 0).current | Should -Be 0
-            (Get-ProgressEx -id 1).current | Should -Be 1
+            (Get-ProgressEx -id 0).Current | Should -Be 0
+            (Get-ProgressEx -id 1).Current | Should -Be 1
 
             Write-ProgressEx -id 0 -increment
-            (Get-ProgressEx -id 0).current | Should -Be 1
+            (Get-ProgressEx -id 0).Current | Should -Be 1
             (Get-ProgressEx -id 1) | Should -BeNullOrEmpty
 
             Write-ProgressEx
