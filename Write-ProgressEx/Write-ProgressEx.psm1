@@ -1,4 +1,4 @@
-﻿# mazzy@mazzy.ru, 2019-04-03
+﻿# mazzy@mazzy.ru, 2019-04-06
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #region Module variables
@@ -249,7 +249,7 @@ function Set-ProgressEx {
         }
 
         # Recursive complete own children
-        $child = $ProgressEx.values | Where-Object { $pInfo.Id -eq $_.ParentId -and $pInfo.Id -ne $_.Id }
+        $child = $ProgressEx.Values | Where-Object { $pInfo.Id -eq $_.ParentId -and $pInfo.Id -ne $_.Id }
         $child | Get-ProgressEx | Set-ProgressEx -Completed
     }
 }
@@ -451,7 +451,7 @@ function Write-ProgressEx {
         }
         else {
             # Complete all if it is No parameters and Not pipe.
-            $ProgressEx.Clone().values | Set-ProgressEx -Completed
+            $ProgressEx.Clone().Values | Set-ProgressEx -Completed
         }
 
         # PassThru
