@@ -1,8 +1,10 @@
+#Requires -module Pester
+
 $projectRoot = Resolve-Path $PSScriptRoot\..
 $moduleRoot = Split-Path (Resolve-Path $projectRoot\*\*.psd1)
 $moduleName = Split-Path $moduleRoot -Leaf
 
-#Import-Module ../$moduleRoot -Force
+Import-Module $moduleRoot -Force
 
 Describe "Module $moduleName examples Tests" -Tag Build, Examples {
 
