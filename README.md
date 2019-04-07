@@ -105,6 +105,10 @@ or manual:
 * Set an execution policy to `RemoteSigned` or `Unrestricted` to execute not signed modules `Set-ExecutionPolicy RemoteSigned`.
 * Run `Import-Module Write-ProgressEx`.
 
+## Known issues
+
+* Unable to import module on case-sensitive file systems. Thanks @jasonchester for the [workaround](https://github.com/mazzy-ax/Write-ProgressEx/issues/5)
+
 ## Changelog
 
 * [CHANGELOG.md](CHANGELOG.md)
