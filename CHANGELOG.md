@@ -37,7 +37,7 @@ See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
   * Get-ProgressEx, Set-ProgressEx, Write-ProgressEx cmdlets
   * examples
   * messages
-* reamde and comments updated
+* readme and comments updated
 
 ## [v0.19](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.18...v0.19) - 2018-05-06
 
