@@ -107,7 +107,7 @@ or manual:
 
 ## Known issues
 
-* Unable to import module on case-sensitive file systems. Thanks @jasonchester for the [workaround](https://github.com/mazzy-ax/Write-ProgressEx/issues/5)
+* Unable to import module on case-sensitive file systems. Thanks @jasonchester for the [workaround](https://github.com/mazzy-ax/Write-ProgressEx/issues/5).
 
 ## Changelog
 
