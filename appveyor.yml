@@ -11,8 +11,7 @@ only_commits:
     - appveyor.yml
 
 image:
-- Visual Studio 2015
-- WMF 5
+- Visual Studio 2017
 - Ubuntu
 
 init:
@@ -22,8 +21,7 @@ init:
 
 install:
 - ps: |
-    Install-Package -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck -PackageManagementProvider PowerShellGet | Out-Null
-    Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+    Install-Module -Name Pester,PSScriptAnalyzer -Force -Scope CurrentUser
 
 build_script:
 - ps: |
