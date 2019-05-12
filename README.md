@@ -1,4 +1,4 @@
-# Write-ProgressEx &ndash; extended write-progress cmdlet
+# Write-ProgressEx &ndash; extended Write-Progress
 
 [project]:https://github.com/mazzy-ax/Write-ProgressEx
 [license]:https://github.com/mazzy-ax/Write-ProgressEx/blob/master/LICENSE
