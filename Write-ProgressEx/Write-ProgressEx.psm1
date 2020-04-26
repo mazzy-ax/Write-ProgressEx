@@ -1,4 +1,4 @@
-﻿# mazzy@mazzy.ru, 2019-04-06
+﻿# mazzy@mazzy.ru, 2020-04-26
 # https://github.com/mazzy-ax/Write-ProgressEx
 
 #region Module variables
@@ -325,10 +325,10 @@ function Write-ProgressEx {
         [Parameter(ValueFromPipeline = $true)]
         [object]$InputObject,
 
-        [ValidateRange(0, [int]::MaxValue)]
-        [int]$Total,
-        [ValidateRange(0, [int]::MaxValue)]
-        [int]$Current, # current iteration number. It may be greather then $total.
+        [ValidateRange(0, [long]::MaxValue)]
+        [long]$Total,
+        [ValidateRange(0, [long]::MaxValue)]
+        [long]$Current, # current iteration number. It may be greather then $total.
 
         [switch]$Reset,
         [switch]$Increment,
@@ -413,7 +413,7 @@ function Write-ProgressEx {
                 $pInfo.PercentComplete = $PercentComplete
             }
             elseif ( $pInfo.Total -and $pInfo.Current ) {
-                $pInfo.PercentComplete = [Math]::Min([Math]::Max(0, [int]($pInfo.Current / $pInfo.Total * 100)), 100)
+                $pInfo.PercentComplete = [Math]::Min([Math]::Max(0, [long]($pInfo.Current / $pInfo.Total * 100)), 100)
             }
             else {
                 $pInfo.Remove('PercentComplete')

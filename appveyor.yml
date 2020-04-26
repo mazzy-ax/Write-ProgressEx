@@ -1,6 +1,6 @@
 # See http://www.appveyor.com/docs/appveyor-yml for many more options
 
-version: 0.21.{build}
+version: 0.22.{build}
 
 only_commits:
   files:
