@@ -3,9 +3,9 @@
 All notable changes to the [project](https://github.com/mazzy-ax/Write-ProgressEx) will be documented in this file.
 See also <https://github.com/mazzy-ax/Write-ProgressEx/releases>.
 
-## [v0.22](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.20...v0.21) - 2020-04-26
+## [v0.22](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.21...v0.22) - 2020-04-26
 
-* Type of `Current` and `Total` parameters changed to `[long]` from `[int]`
+* Type of parameters `Current` and `Total` changed to `[long]` from `[int]`
 
 ## [v0.21](https://github.com/mazzy-ax/Write-ProgressEx/compare/v0.20...v0.21) - 2019-03-28
 
