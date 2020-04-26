@@ -22,7 +22,7 @@ CompanyName = 'mazzy'
 Copyright = 'Copyright (c) 2017 Sergey Mazurkin, licensed under MIT License.'
 
 # Description of the functionality provided by this module
-Description = 'Write-ProgressEx extends the functionality of the standard cmdlet. Write-ProgressEx is a powershell advanced function that provide a simple way to show ProgressBars, PercentComplete and SecondsRemaining.'
+Description = 'Write-ProgressEx is a powershell advanced function that extends the Write-Progress cmdlet.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'
@@ -64,7 +64,7 @@ PowerShellVersion = '3.0'
 FunctionsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @('Write-ProgressEx', 'Get-ProgressEx', 'Set-ProgressEx')
+CmdletsToExport = @()
 
 # Variables to export from this module
 VariablesToExport = @('ProgressEx')
