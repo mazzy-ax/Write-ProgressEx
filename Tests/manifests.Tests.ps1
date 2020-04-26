@@ -96,8 +96,4 @@ Describe 'Nuget specification Tests' -Tag 'Meta' {
         $nuspec.package.metadata.projectUrl | Should Be ($manifest.PrivateData.PSData.ProjectUri)
     }
 
-    It 'nuspec and manifest licenseUrl notes are same' {
-        $nuspec.package.metadata.licenseUrl | Should Be ($manifest.PrivateData.PSData.LicenseUri)
-    }
-
 }
